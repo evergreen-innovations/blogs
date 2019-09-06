@@ -16,6 +16,7 @@ Creating Time
 ---------------------------
 The [time.Time](https://golang.org/pkg/time/) type is the workhorse of `package time` and, importantly, is time-zone aware. Getting the current time uses the `time.Now()` function with returns a `time.Time` `struct`. `time.Time` has many convenience methods, for example
 
+```go
     package main
 
     import (
@@ -32,9 +33,11 @@ The [time.Time](https://golang.org/pkg/time/) type is the workhorse of `package 
     }
 
     This is day 27 of month May
+```
 
 To get the month as an integer, we can use the `Date` [method](https://golang.org/pkg/time/#Time.Date)
 
+```go
     ...
 
     year, month, day := now.Date()
@@ -42,7 +45,7 @@ To get the month as an integer, we can use the `Date` [method](https://golang.or
     fmt.Println("Today is in the year", year, " and month", month)
 
     ...
-
+```
 
 As previously mentioned, the `time.Type` type is location aware. If we want to create a specific date-time, the `Date` [function](https://golang.org/pkg/time/#Date) is used, which has the signature
 
@@ -50,6 +53,7 @@ As previously mentioned, the `time.Type` type is location aware. If we want to c
 
 The final location parameter can either be the constant `time.UTC` or be generated from the `LoadLocation` [function](https://golang.org/pkg/time/#LoadLocation), which takes the timezone name as the only argument. A helpful list of these names can be found [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) and take the form `Europe/London` etc. `LoadLocation` also accepts `"Local"` and `"UTC"` as special cases. For example, to generate a date in Auckland, New Zealand,
 
+```go
     func main() {
     	loc, err := time.LoadLocation("Pacific/Auckland")
     	if err != nil {
@@ -65,6 +69,7 @@ The final location parameter can either be the constant `time.UTC` or be generat
 
     The time in Auckland is 2019-05-05 11:00:00 +1200 NZST
     Or in UTC               2019-05-04 23:00:00 +0000 UTC
+```
 
 The package helpfully defines the `UTC` method which returns a new `time.Time` with the location set the UTC, with the corresponding adjustments to the date and time made.
 
@@ -76,6 +81,7 @@ This brings us nicely onto an aspect of the time package which seems a bit confu
 
 Most languages implement time formatting using verbs, similar to those used in with `fmt.Printf`. For example using the `datetime` [module](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior) in Python3 the time could be printed with `"%H:%M:%S%"`. Go takes a very different approach by using predefined formats: the same time string would be created with `"15:04:05"`. To create custom strings, we use the `Format` [method](https://golang.org/pkg/time/#Time.Format),
 
+```go
     func main() {
     	date := time.Now()
 
@@ -86,6 +92,7 @@ Most languages implement time formatting using verbs, similar to those used in w
     }
 
     The time is 19:00:35
+```
 
 The standard library [defines](https://golang.org/pkg/time/#pkg-constants) a number of common formats such as `RFC3339` which also allow us to work out the individual predefined format elements. These common formats can be used directly with the `Format` method
 
@@ -97,6 +104,7 @@ The standard library [defines](https://golang.org/pkg/time/#pkg-constants) a num
 
 Parsing times from strings uses the same format strings:
 
+```go
     func main() {
     	timeStr := "2019 05 27 11:23:45"
 
@@ -111,6 +119,7 @@ Parsing times from strings uses the same format strings:
     }
 
     date:  2019-05-27 11:23:45 +0000 UTC
+```
 
 If the date is in a particular time zone without the timezone information in the string itself, there is the `time.ParseInLocation` function which takes an additional `Location` argument which can be created in the same manner as described earlier.
 
@@ -123,6 +132,7 @@ Time.Duration
 The `time.Duration` [type](https://golang.org/pkg/time/#Duration) has a straightforward implementation but makes working with time feel natural. `time.Duration` is simply an 
 `int64` number of nanoseconds. The beauty arises from Go's [untyped constants](https://blog.golang.org/constants) which then defines useful intervals as 
 
+```go 
     const (
         Nanosecond  Duration = 1
         Microsecond          = 1000 * Nanosecond
@@ -131,9 +141,11 @@ The `time.Duration` [type](https://golang.org/pkg/time/#Duration) has a straight
         Minute               = 60 * Second
         Hour                 = 60 * Minute
     )
+```
 
 which permits code such as the following 
 
+```go
     func sleepFor(duration time.Duration) {
     	for i := 0; i < 10; i++ {
     		fmt.Println("Iteration", i)
@@ -145,10 +157,12 @@ which permits code such as the following
     	interval := 500 * time.Millisecond
 
     	sleepFor(interval)
-    }
+	}
+```
 
 Using `time.Duration` as the argument type is much more robust than, say, passing an `int` and documenting that this input should be in milliseconds. The standard library functions work extensively with `time.Duration`. Some examples of using duration:
 
+```go
     func main() {
     	now := time.Now().UTC()
     	future := now.Add(5 * time.Hour)
@@ -172,16 +186,19 @@ Using `time.Duration` as the argument type is much more robust than, say, passin
     In the future   2019-05-28 00:32:24.663249 +0000 UTC
     In the past     2019-05-27 19:21:24.663249 +0000 UTC
     Less than 10s
+```
 
 Note that `time.Duration` defines a `String` [method](https://golang.org/pkg/time/#Duration.String) which also prints duration including units.
 
 The slight wart with time.Duration is trying to create duration from variables which are integers. Go does not allow mixed type arithmetic; therefore the following will not compile
 
+```go
     func main() {
 	    interval := 5
 
 	    time.Sleep(interval * time.Second)
     }
+```
 
 with the error
 
@@ -189,11 +206,13 @@ with the error
 
 Instead we need to explicitly convert the variable to a `time.Duration` and then apply the correct scale
 
+```go
     func main() {
     	interval := 5
 
     	time.Sleep(time.Duration(interval) * time.Second)
     }
+```
 
 This explicit conversion feels awkward but, in our experience, is not required all that often and is a small price for the overall utility of the duration type.
 
@@ -202,6 +221,7 @@ This explicit conversion feels awkward but, in our experience, is not required a
 ----------------------------
 We often want to Unmarshal and Marshal times from JSON data. Take the following example
 
+```go
     type tsData struct {
     	Timestamp time.Time `json:"ts"`
     	Value     int       `json:"value"`
@@ -220,6 +240,7 @@ We often want to Unmarshal and Marshal times from JSON data. Take the following 
 
     	fmt.Printf("%+v\n", data)
     }
+```
 
 We have defined a type `tsData` to represent times-series data which has a `Timestamp` of type `time.Time` and a `Value` of type `int`. Our simulated json input is defined in the `input` variable which has a `ts` field with a reasonable time format.
 
@@ -235,6 +256,7 @@ Our custom type is called `timestamp` which simply embeds a `time.Time`. This al
 
 In order to satisfy the `Unmarshaler` interface we define a single method on `timestamp` called `UnmarashalJSON`. Note how we can access the anonymous field using its type in the line `ts.Time = t`.
 
+```go
     const layout = "2006 01 02 15:04:05"
 
     type timestamp struct {
@@ -276,6 +298,7 @@ In order to satisfy the `Unmarshaler` interface we define a single method on `ti
     	fmt.Printf("%+v\n", data)
         fmt.Println("Month:", data.Timestamp.Month())
     }
+```
 
 Now when we run the code we get the desired output:
     {Timestamp:2019-05-27 12:52:18 +0000 UTC Value:10}
@@ -283,6 +306,7 @@ Now when we run the code we get the desired output:
 
 Marshalling is achieved by satisfying the `json.Marshaler` [interface](https://golang.org/pkg/encoding/json/#Marshaler). Note the value receiver (ie not `*timestamp`),
 
+```go
     ...
     func (ts timestamp) MarshalJSON() ([]byte, error) {
     	// The +2 is take account of the quotation marks
@@ -296,9 +320,11 @@ Marshalling is achieved by satisfying the `json.Marshaler` [interface](https://g
     	return b, nil
     }
     ...
+```
 
 Now in `func main()`:
 
+```go
     ...
     	dataJSON, err := json.Marshal(data)
     	if err != nil {
@@ -310,32 +336,6 @@ Now in `func main()`:
     ...
 
     true
+```
 
 once we have removed all the white space in the `input` variable.
-
-<!-- Time.Ticker
------------------------------
-* Show example to do things at regular intervals and deal with incoming events
-
-A `time.Ticker` can be used to repeat an action at regular intervals. The ticker sends a
-
-    func main() {
-    	ticker := time.NewTicker(1 * time.Second)
-    	for now := range ticker.C {
-    		fmt.Println("Time is:", now.UTC())
-    	}
-    }
-
-    Time is: 2019-05-27 22:52:05.258826 +0000 UTC
-    Time is: 2019-05-27 22:52:06.257796 +0000 UTC
-    Time is: 2019-05-27 22:52:07.258072 +0000 UTC
-    Time is: 2019-05-27 22:52:08.261247 +0000 UTC
-    Time is: 2019-05-27 22:52:09.259775 +0000 UTC
-    Time is: 2019-05-27 22:52:10.25835 +0000 UTC
-    Time is: 2019-05-27 22:52:11.257361 +0000 UTC
-    Time is: 2019-05-27 22:52:12.262514 +0000 UTC
-    Time is: 2019-05-27 22:52:13.257867 +0000 UTC
-
-Time.Timer
----------------------------
-* Show how to make events happen at a particular time (see bod automation) -->
