@@ -1,4 +1,4 @@
-module github.com/evergreen-innovations/modbus
+module github.com/evergreen-innovations/blogs/modbus
 
 go 1.14
 
