@@ -1,0 +1,25 @@
+version: '3.2'
+
+services:
+  powermeter:
+    # When using 'build' and 'image' together,
+    # `docker-compose build` will build the
+    # Docker file in the `context`directory
+    # and give the image the name given
+    # in the 'image' tag.
+    build:
+      context: powermeter/
+    image: powermeter
+    restart: always
+
+  supervisor:
+    build:
+      context: supervisor/
+    # To connect specifically to the powermeter
+    # we supply a host commanad-line option. Docker
+    # will resolve 'powermeter' into the IP address
+    # of the container running the powermeter service
+    # above.
+    command: '-host powermeter'
+    image: supervisor
+    restart: always
