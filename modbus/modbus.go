@@ -2,14 +2,8 @@
 package modbus
 
 import (
-<<<<<<< HEAD
-	"encoding/binary"
-	"fmt"
-	"log"
-	"time"
-=======
-	"github.com/evergreen-innovations/modbus/internal/conversions"
->>>>>>> fb3fac00a55c6bf3148e97054e9fcc4296e7fb5d
+
+	"github.com/evergreen-innovations/blogs/modbus/internal/conversions"
 
 	"github.com/goburrow/modbus"
 	"github.com/tbrandon/mbserver"
@@ -49,7 +43,6 @@ type Client struct {
 // NewClient starts a modbus client listening at the given address
 func NewClient(addr string) (*Client, error) {
 	handler := modbus.NewTCPClientHandler(addr)
-	handler.Timeout = 10 * time.Second
 	if err := handler.Connect(); err != nil {
 		return nil, err
 	}
@@ -65,26 +58,10 @@ func (c *Client) ReadRegister(address uint16) (float32, error) {
 		return 0.0, err
 	}
 
-<<<<<<< HEAD
-	float := Float32frombytes(result)
-
-	// fmt.Printf("\n Byte Array %v\n", result)
-	fmt.Printf("\n Read from register %d (%s), value %f ", address, regname, float)
-
-=======
 	return conversions.Float32FromBytes(result), nil
->>>>>>> fb3fac00a55c6bf3148e97054e9fcc4296e7fb5d
 }
 
 // Close closes the client
 func (c *Client) Close() error {
 	return c.handler.Close()
-}
-
-//Modbus conversions
-
-//Float32frombytes - convert bytes to float 32 value
-func Float32frombytes(bytes []byte) float32 {
-	bits := binary.BigEndian.Uint16(bytes)
-	return float32(bits)
 }
