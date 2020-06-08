@@ -1,0 +1,1 @@
+Docker container for starting Thingsboard, Elasticsearch, Logstash and Kibana for IoT Demo Application [blog] (https://www.evergreeninnovations.co/blog-elk-stack-in-docker/).

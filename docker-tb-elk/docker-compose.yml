@@ -1,0 +1,103 @@
+version: '3.2'
+
+services:
+  elasticsearch:
+    build:
+      context: elasticsearch/
+      # Passes the ELK_VERSION from .env file
+      args:
+        ELK_VERSION: $ELK_VERSION
+    # Loads the local config file to the given target path in the docker container
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+    # creates a docker volume on local machine, the data from container is stored here
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    # Exposes ports 9200 and 9300 
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      # remove the comment to the ELASTIC_PASSWORD argument to enable xpack 
+      # ELASTIC_PASSWORD: changeme
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks
+      # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+    restart: always  
+    networks:
+      - elk
+
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    restart: always
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - "5601:5601"
+    restart: always
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  thingsboard:
+    build: 
+      context: thingsboard/
+      args:
+        TB_VERSION: $TB_VERSION
+      #9090 http/tcp port
+      #1883 for using MQTT for data transfer
+      #5683 for using CoAP protocol
+    ports:
+      - "9090:9090"
+      - "1883:1883"
+      - "5683:5683"
+      #mounts the /data folder inside the container to volumes
+    volumes:
+      - mytb-data:/data
+      - mytb-logs:/var/log/thingsboard
+    restart: always
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  elasticsearch:
+  mytb-data:  
+  mytb-logs:
