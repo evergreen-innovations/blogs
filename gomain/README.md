@@ -1,12 +1,10 @@
 # Writing function main in Go
 
-All code from this blog is available [here](https://github.com/evergreen-innovations/blogs/tree/master/gomain)
+This blog is written as part of our Evergreen Innovations blog series <a href="https://www.evergreeninnovations.co/tech-blog/" target="_blank">here</a>.
 
 ## Overview
 
-An important part of writing software is dealing with errors and, in particular, their interaction with resources. For example we should
-close any database connections or open files before our program exits. Typically the `defer` keyword is used to perform such actions
-as defered functions run just before a function returns. We can use a similar approach in our `main` function (where the program starts and finishes). A slight difference, however, is that function `main` does not return an `error` like most go functions but instead indicates failure with a non-zero exit code.
+An important part of writing software is dealing with errors and, in particular, their interaction with resources. For example we should close any database connections or open files before our program exits. Typically the `defer` keyword is used to perform such actions as defered functions run just before a function returns. We can use a similar approach in our `main` function (where the program starts and finishes). A slight difference, however, is that function `main` does not return an `error` like most go functions but instead indicates failure with a non-zero exit code.
 
 ## Errors generated in main
 In Go, a non-zero exit code can be achieved with a call to `os.Exit(1)` for an exit code of 1. This should be avoided as deferred functions are not called and therefore we do not clean up any resources. To show this in action, consider the following example:
@@ -192,5 +190,4 @@ in the for loop, iteration 6
 The last line indicates that our deferred function has run sucessfully.
 
 ## Conclusion
-In this blog we have demonstrated how we tend to write our `main` function for the systems we develop. If you want us to describe
-anything else go-related, please get in touch.
+In this blog we have demonstrated how we tend to write our `main` function for the systems we develop. If you want us to describe anything else go-related, please get in touch.
