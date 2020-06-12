@@ -40,11 +40,11 @@ The log information is captured as a JSON and is ingested by Logstash,
 
 KQL can be used to filter the further filter the logs. For example, if I want to view only the errors in the given date range. The JSON  data has a `key` called `level`, where I specify whether my log record is an error, info, debug, warning. So I write a query to search for logs where `level:'error'` as shown below.
 
-![Kibana GUI](/01_blog/images/kibana-query1.png)
+![Kibana GUI](/docker-tb-elk/images/kibana-query1.png)
 
 Further, regular expressions can be used for more complex querying. In the example below I use regular expressions to retrieve error logs where the log message contains the word register.
 
-![Kibana GUI](/01_blog/images/kibana-query2.png)
+![Kibana GUI](/docker-tb-elk/images/kibana-query2.png)
 
 Because of such powerful querying tools, Kibana makes it easy to analyze the logs and troubleshoot problems quickly.
 
@@ -57,7 +57,7 @@ Thingsboard supports lightweight IoT protocols - MQTT, CoAP, and network protoco
 
 A demo real-time dashboard of Thingsboard is shown below.
 
-![Thingsboard GUI](/01_blog/images/thingsboard-example.png)
+![Thingsboard GUI](/docker-tb-elk/images/thingsboard-example.png)
 
 The values can be filtered based on date-time. Thingsboard can be also used to perform transformations on the raw data. In the above example, the boolean value is converted to the string "ON" the Device status. An unexpected value or a value lower than the specified threshold occurs an alarm can be triggered which can be used to alert (using the Thingsboard rule engine) an operator on-site.
 
