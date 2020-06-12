@@ -20,11 +20,11 @@ The second component is Logstash that forms a data processing pipeline. It can i
 
 Finally, Kibana is used for visualizing the real-time data in Elasticsearch, query the database, perform actions such as filter the data, etc using KQL (Kibana Query Language). 
 
- ![Image of ELK](/01_blog/images/elk.png)
+ ![Image of ELK](/docker-tb-elk/images/elk.png)
 
 An example of the Kibana dashboard with some log data is shown below. The top right corner (highlighted in red) can be used to filter the real-time log data by date range. The search bar (highlighted in black) is used to write queries. The selected fields are shown in a structured way on the dashboard.
 
-![Kibana GUI](/01_blog/images/kibana.png)
+![Kibana GUI](/docker-tb-elk/images/kibana.png)
 
 The log information is captured as a JSON and is ingested by Logstash,
 
