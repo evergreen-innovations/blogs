@@ -1,43 +1,24 @@
 # Go code to simulate IoT devices
 
 ## Overview
-Most of the time developers need to start developing and testing the code
-before they have access to the actual hardware. We at Evergreen Innovations do
-this a lot and have found that a combination of Go and Docker provides a great
-means creating simulating particular bits of hardware. This approach allows for
-development of interfaces to the hardware as well as the creation of specific
-scenarios in the simlulator to both mimic real-world behaviour and error
-states. In the case of the errors, the any controlling software can be developed to properly handle these scenarios.
+Often IoT or embedded software developers need to start developing and testing code before they have access to the actual hardware. We at Evergreen Innovations face this challenge quite frequently. We have found that a combination of Go and Docker provides an excellent means of creating simulations of particular elements of hardware.
 
-All the code from this blog is [available](https://github.com/evergreen-innovations/blogs). We always want to post full
-examples so we have included some additional description of the code structure
-towards the end of this blog.
+Our Docker/Go IoT approach allows for the development of interfaces to the hardware and the creation of specific scenarios in the simulator. This allows us to mimic real-world behavior and also to simulate error states. In the case of errors, controlling software can then be developed to handle these scenarios properly.
 
-In this blog we are going to take the example of a power meter which reports
-instaneous data such as frequency alongside the 3-phases of voltage and current.
-An example of such an application could be a battery connected to a domestic solar
-panel. The pupose of the blog is to demostrate the communications between such a
-device and a supervisor over the Modbus protocol. In our case, the Modbus
-communication will be over TCP.
+In this blog, we present an example of a power meter, a typical IoT device in some of our energy storage applications. The power meter reports instantaneous data such as the grid frequency alongside the 3-phases of voltage and current. An example application could be a battery connected to a domestic solar panel. 
 
-Modbus is a messaging protocol by establishing a client-server communication and
-has been widely adopted by IoT devices. You can find more information at
-[modbus.org](http://modbus.org/). The specifics of of reading and writing values
-from the modbus registers are not covered in this blog post. Let us know if you'd
-like us to write a blog on this!
+The purpose of this blog is to demonstrate the communications between such a device and a supervisor via the Modbus protocol. In our case, the Modbus communication will be over TCP.
+
+Modbus is a messaging protocol by establishing a client-server communication. This protocol is robust, well established, and supported by a wide range of industrial sensors and IoT devices. See [modbus.org](http://modbus.org/) for further information on Modbus. 
+
+The specifics of reading and writing values from the Modbus registers are not covered in this blog post. Let us know if you would like us to write a blog on this!
 
 ## Architecture
-In order to provide a simplied interface for this demonstration a `modbus` Go package has been created to wrap
-the excellent [modbus server](https://github.com/goburrow/modbus) and [modbus client](https://github.com/tbrandon/mbserver)
-to encompass both the client and server functionality in a single package.
+To provide a simplified interface for this demonstration, we created a `Modbus` Go package to wrap the excellent [modbus server](https://github.com/goburrow/modbus) and [modbus client](https://github.com/tbrandon/mbserver) Go packages. Our wrapper encompasses both the client and server functionality in a [single package](https://github.com/evergreen-innovations/blogs/tree/master/modbus).
 
-Data is transferred over the Modbus protocol by writing to and reading from registers. The documentation for the device will specify the value stored at a particular address,
-for example our power meter stores the frequency at address 16384.
+Data is transferred over the Modbus protocol by writing to and reading from registers. The register mapping will be specific to the particular sensor or IoT device used and can be found in the manufacturer documentation. For example, assuming this [power meter](https://www.accuenergy.com/products/acuvim-ii-power-energy-submeter/), the device stores the grid frequency at address 16384.
 
-The power meter will act as the server, writing values to registers and the supervisor
-will act as the client, reading the values from the power meter. In case we will be writing
-the code for both sides of the interface though often in practice values could be read from
-a device (or similarly written to supervisor) over which you have no control.
+The power meter acts as the Modbus server, writing values to registers, and the supervisor act as the client, reading values from the power meter. In our demonstration example below, we will write the code for both sides of the interface. In most practical applications, the sensor (server here) side would be implemented by the manufacturer. Only the supervisor would need to be implemented by the IoT interface developer.
 
 ## The power meter
 The code for the simulated power meter can be found in the "powermeter" folder of the repository,
