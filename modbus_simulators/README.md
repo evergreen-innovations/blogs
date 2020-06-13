@@ -163,19 +163,11 @@ read CurrentI3[16406]: 35399
 We have therefore tested communication over Modbus on our local development machine, without needing a single sensor!
 
 ## Docker integration
-As outlined in the first [blog](https://www.evergreeninnovations.co/blog-elk-stack-in-docker/) the aim of this series is to create a complete IoT system
-for local development, and is most easily acheived using docker containers. In the directories for
-both the power meter and the supervisor there is `Dockerfile` to build the container. Both these
-files have a similar structure and make use of a two-stage build to minimise the final container size
-(~3MB rather than ~800MB).
+As outlined in this related [blog](https://www.evergreeninnovations.co/blog-elk-stack-in-docker/), our IoT blog series aims to create a complete IoT system for local development. This is most easily achieved using Docker containers. In the directories for both the power meter and the supervisor, we included a `Dockerfile` to build the container. Both of these files have a similar structure and use a two-stage build to minimize the final container size (~3MB rather than ~800MB).
 
-To run the services together we can make sure of [docker-compose](https://docs.docker.com/compose/).
-In the `docker-compose.yml` file we specify the servies that we want to run, in this case the
-powermeter and the supervisor. For the supervisior, we specify the commandline arguments in the
-`command` tag to specify the host for the Modbus connection - notice we can use 'powermeter' as the host
-which docker will resolve into the ip address of the container associated with the 'powermeter' service.
+To run the services together, we can make use of [docker-compose](https://docs.docker.com/compose/). In the `docker-compose.yml` file, we specify the services that we wish to run - the power meter and the supervisor in this example case. For the supervisor, we specify the commandline arguments in the `command` tag to specify the host for the Modbus connection. We can use 'powermeter' as the host, which Docker will resolve into the IP address of the container associated with the 'powermeter' service.
 
-The images can then be conveniently built by issuing the following command in the same directory as the
+The Docker images can then be conveniently built by issuing the following command in the same directory as the
 `docker-compose.yml`:
 
 ```bash
@@ -213,10 +205,8 @@ supervisor_1  | read CurrentI2[16404]: 14367
 supervisor_1  | read CurrentI3[16406]: 54751
 ```
 
-With this in place, we are ready to integrate these iot devices into the larger project outlined in
-the previous [blog](https://www.evergreeninnovations.co/blog-elk-stack-in-docker/).
-
+With this in place, we are ready to integrate these IoT devices into the larger project as outlined in
+the related [blog here](https://www.evergreeninnovations.co/blog-elk-stack-in-docker/).
 
 ## Conclusion
-We hope this blog was useful for you. Please stay tuned for the next part in the series where we continue to build our IoT framework and
-do let us know if there are any other subject that would you like to know about.
+We hope this blog was useful for you. Please stay tuned for the next part in the series where we continue to build our IoT framework and do let us know if there are any other subject that would you like to know about.
