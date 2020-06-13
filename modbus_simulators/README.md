@@ -102,10 +102,7 @@ writing to CurrentI3[16406] value: 63385
 ```
 
 ## The supervisor
-The code structure for the supervisor is similar to that of the power meter, and
-must have identical Modbus register definitions. In the supervisor, however, we
-create a client rather than a server and use the ip address of the power meter to
-establish a connection.
+The code structure for the supervisor is similar to that of the power meter and must have identical Modbus register definitions. In the supervisor, however, we create a client rather than a server and use the IP address of the power meter to establish a connection.
 
 ```go
 // Set up the commandline options
@@ -123,7 +120,7 @@ if err != nil {
 defer c.Close()
 ```
 
-The client can then be used to read the registers that the power meter is writing to:
+The client can now be used to read the registers that the power meter is writing to:
 
 ```go
 for range ticker.C {
@@ -139,10 +136,7 @@ for range ticker.C {
 }
 ```
 
-To see the process in action open up two terminal windows. In the first open up the directory
-for the power meter and the second that of the supervisor. Starting with the power meter, issue
-the command `go run main.go` in both terminal windows and observe the output. Your output will
-be slightly different (due to using random numbers as the value) but you will see blocks such as
+To observe the process in action, open up two terminal windows. In the first terminal, open up the directory for the power meter; in the second terminal, open that of the supervisor. Starting with the power meter, issue the command `go run main.go` in both terminal windows and observe the output. Your output will be slightly different (due to using random numbers as the value), but you should see blocks such as
 
 ```
 writing to Frequency[16384] value: 61325
@@ -154,7 +148,7 @@ writing to CurrentI2[16404] value: 9852
 writing to CurrentI3[16406] value: 35399
 ```
 
-which matches output in the supervisor:
+which matches the output in the supervisor:
 
 ```
 read Frequency[16384]: 61325
@@ -166,7 +160,7 @@ read CurrentI2[16404]: 9852
 read CurrentI3[16406]: 35399
 ```
 
-We have therefore communicated over Modbus!
+We have therefore tested communication over Modbus on our local development machine, without needing a single sensor!
 
 ## Docker integration
 As outlined in the first [blog](https://www.evergreeninnovations.co/blog-elk-stack-in-docker/) the aim of this series is to create a complete IoT system
