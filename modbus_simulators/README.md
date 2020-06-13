@@ -21,12 +21,9 @@ Data is transferred over the Modbus protocol by writing to and reading from regi
 The power meter acts as the Modbus server, writing values to registers, and the supervisor act as the client, reading values from the power meter. In our demonstration example below, we will write the code for both sides of the interface. In most practical applications, the sensor (server here) side would be implemented by the manufacturer. Only the supervisor would need to be implemented by the IoT interface developer.
 
 ## The power meter
-The code for the simulated power meter can be found in the "powermeter" folder of the repository,
-and is set up as a standard Go module-enabled project.
+The code for the simulated power meter can be found in the "powermeter" folder of this repository and is set up as a standard Go module-enabled project.
 
-The first step in the project is to define the Modbus address for the various values exposed
-by this powermeter. These values are the frequency, three-phase voltage, and three-phase current,
-given by:
+The first step in the project is to define the Modbus addresses for the various values exposed by this power meter. The example values chosen here are the frequency, three-phase voltage, and three-phase current as follows:
 
 ```go
 const (
@@ -40,8 +37,7 @@ const (
 )
 ```
 
-To allow easy interation over these addresses, they are packed into a slice alongside a human
-readable name for convenience,
+To allow easy interation over these addresses, they are packed into a slice alongside a human-readable name for convenience.
 
 ```go
 var registers = []Register{
@@ -54,9 +50,7 @@ var registers = []Register{
 	{"CurrentI3", CurrentI3Addr},
 }
 ```
-Given that our Modbus communication is going to be over TCP, commandline arguments for the host
-and the port are provided using the [flag](https://golang.org/pkg/flag/) package, with default
-values provided
+Given that our Modbus communication is over TCP, commandline arguments for the host and the port are provided using the [flag](https://golang.org/pkg/flag/) package, with default values provided
 
 ```go
 host := flag.String("host", defaultHost, "host for the modbus server")
@@ -76,10 +70,9 @@ if err != nil {
 defer s.Close()
 ```
 
-There is more detail on the error handling in the main function later in this blog.
+Details concerning error handling in the main function are covered in this separate [blog](https://github.com/evergreen-innovations/blogs/tree/master/gomain) 
 
-Finally, each of the registers is written to within a timed loop with a random value which we
-can them observe from the supervisor, described below.
+Finally, each of the registers is assigned a random numerical value within a timed loop. We can then observe those values from the supervisor, as described further below.
 
 ```go
 rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
