@@ -43,14 +43,14 @@ KQL can be used to further filter the logs, for example to view only messages ma
 
 ![Kibana GUI](/docker-tb-elk/images/kibana-query1.png)
 
-Further, regular expressions can be used for more complex querying. In the example below I use regular expressions to retrieve error logs where the log message contains the word register.
+Regular expressions can also be used for more complex querying. In the example below, we use regular expressions to retrieve error logs where the log message contains the word register.
 
 ![Kibana GUI](/docker-tb-elk/images/kibana-query2.png)
 
-Because of such powerful querying tools, Kibana makes it easy to analyze the logs and troubleshoot problems quickly.
+With such powerful querying tools, Kibana makes it easy to analyze logs and troubleshoot problems quickly.
 
 ### Thingsboard
-Most of the Internet of Things (IoT) devices such as sensors, GPS, meters generate highly granular data (at least per second). An example could be a fleet application which comprises of 2-3 temperature sensors, IMU sensors, GPS on each vehicle. 
+Most Internet of Things (IoT) devices such as sensors, GPS , meters generate highly granular data (at least per second). An example could be a fleet application which comprises of 2-3 temperature sensors, IMU sensors, GPS on each vehicle. 
 
 Typically, all the data needs to presented in real-time and in a meaningful way to the engineers. In our above example, an engineer or operator may need to be alerted when the temperature of the vehicle is too high or in an event of an accident. Thingsboard is an open-source IoT platform that can be used to create such a real-time dashboard for device management. It can integrate the data from all the devices, process them, and take action on a set event.
 
