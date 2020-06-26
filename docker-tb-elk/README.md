@@ -23,11 +23,11 @@ Finally, Kibana is used to visualize the real-time data in Elasticsearch, query 
 
  ![Image of ELK](/docker-tb-elk/images/elk.png)
 
-An example of the Kibana dashboard with some log data is shown below. The top right corner (highlighted in red) can be used to filter the real-time log data by date range. The search bar (highlighted in black) is used to write queries. The selected fields are shown in a structured way on the dashboard.
+An example of a Kibana dashboard with some log data is shown below. The top right corner (highlighted in red) can be used to filter real-time log data by a date range. The search bar (highlighted in black) is used to write queries. The selected fields are shown in a structured way on the dashboard.
 
 ![Kibana GUI](/docker-tb-elk/images/kibana.png)
 
-The log information is captured as a JSON and is ingested by Logstash,
+The log information is captured in JSON format and is ingested by Logstash
 
 ```yaml
 {
