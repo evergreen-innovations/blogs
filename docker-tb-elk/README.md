@@ -11,13 +11,15 @@ In many of our projects, we deal with complex IoT systems. When the IoT infrastr
 The blog also demonstrates how Docker can be used to deploy multiple microservices on the same machine. 
 
 ## Elasticsearch, Logstash, Kibana (ELK)
-Elasticsearch, Logstash, and Kibana are three open-source projects which together are best suited for applications such as server/log search and analytics. Using the ELK stack, the engineer can search gigabytes of unstructured log data to locate the issue. For example, she can find the time and the reason the server went down, retrieve the services which were running at the time, get the logs from the services running at that time and locate the service which was causing the issue all in one or two queries.
+Elasticsearch, Logstash, and Kibana are three open-source projects that are well-suited for applications such as server/log search and analytics. Using the ELK stack enables searching gigabytes of unstructured log data to locate e.g. a sensor connection issue. 
 
-The first component of the stack is Elasticsearch, which is a document-oriented database capable of storing the large time-series data as JSON.
+For example, we can find the time and reason the server went down, retrieve the services that were running at the time, get the logs from the services running at that time, and locate the service which was causing the issue. All this is possible with one or two simple queries.
 
-The second component is Logstash that forms a data processing pipeline. It can ingest data from different sources, perform transformations as specified, and send it to the frontend. Sources could be log data that can be sent to Logstash using Filebeat, server logs collected via collectd, stasd, etc.
+The first component of the stack is Elasticsearch, a document-oriented database capable of storing the large time-series data as JSON.
 
-Finally, Kibana is used for visualizing the real-time data in Elasticsearch, query the database, perform actions such as filter the data, etc using KQL (Kibana Query Language). 
+The second component is Logstash, which forms a data processing pipeline. Logstash can ingest data from different sources, perform transformations as specified, and send it to the frontend. Sources could be log data that can be sent to Logstash using Filebeat, server logs collected via collectd, stasd, etc.
+
+Finally, Kibana is used to visualize the real-time data in Elasticsearch, query the database, perform actions such as filtering the data, etc. using KQL (Kibana Query Language). 
 
  ![Image of ELK](/docker-tb-elk/images/elk.png)
 
