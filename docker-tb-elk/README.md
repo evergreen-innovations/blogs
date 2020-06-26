@@ -39,7 +39,7 @@ The log information is captured in JSON format and is ingested by Logstash
 }
 ```
 
-KQL can be used to filter the further filter the logs. For example, if I want to view only the errors in the given date range. The JSON  data has a `key` called `level`, where I specify whether my log record is an error, info, debug, warning. So I write a query to search for logs where `level:'error'` as shown below.
+KQL can be used to further filter the logs, for example to view only messages marked as errors in the given date range. The JSON data has a `key` called `level`, where we specify whether the log record is an error, info, debug or warning. To view only errors, insert a query to search for logs where `level:'error'` as shown below.
 
 ![Kibana GUI](/docker-tb-elk/images/kibana-query1.png)
 
