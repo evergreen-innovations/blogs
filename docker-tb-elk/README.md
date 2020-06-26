@@ -2,14 +2,13 @@
 # Setting up Elasticsearch, Logstash, Kibana (ELK) and Thingsboard environment using Docker
 
 ## Overview
-Modern software comprises modular, scalable applications that are built with the microservice architecture. Using such a design pattern ensures the uptime of the services, enables isolated software debugging, server troubleshooting, and makes the CI/CD processes more streamlined. 
+Modern software comprises modular, scalable applications that are often designed and built around a microservice architecture. Using a microservice design pattern ensures high service uptime, enables software debugging of self-contained units, eases server troubleshooting, and makes the CI/CD processes more streamlined. 
 
-Docker provides a great way to create isolated microservice applications with different software and package needs. It maximizes the server utilization, helps in rapid prototyping, and reduces setup time when migrating servers. One can quickly spin up an application on any server where Docker is running, without wasting the time on setting up the deployment/development environment.  
+Docker provides a great way to create self-contained (or isolated) microservice applications with different software and package needs. It maximizes server utilization, helps in rapid prototyping, and reduces setup time when migrating servers. One can quickly spin up an application on any server where Docker is running, massively reducing the time required to set up the deployment/development environment.  
 
-When the IT Infrastructure and as the codebase increases, there is a need to have efficient log and server monitoring in place to reduce developer debugging time, improved troubleshooting, and productivity. This blog will introduce a possible solution to log/server management using open-source software stack - Elasticsearch, Logstash, Kibana. 
-We will also begin to demonstrate how Docker can be used to deploy multiple services on the same machine. 
+In many of our projects, we deal with complex IoT systems. When the IoT infrastructure and the codebase increase, there is a need to have efficient logging and server monitoring to reduce developer debugging time, improve troubleshooting, and increase productivity. This blog introduces a solution to logging and server management using the ELK open-source software stack: Elasticsearch, Logstash, Kibana. The ELK stack has often helped us troubleshooting large systems. 
 
-We will be using Docker throughout this blog series to demonstrate the microservice design pattern.
+The blog also demonstrates how Docker can be used to deploy multiple microservices on the same machine. 
 
 ## Elasticsearch, Logstash, Kibana (ELK)
 Elasticsearch, Logstash, and Kibana are three open-source projects which together are best suited for applications such as server/log search and analytics. Using the ELK stack, the engineer can search gigabytes of unstructured log data to locate the issue. For example, she can find the time and the reason the server went down, retrieve the services which were running at the time, get the logs from the services running at that time and locate the service which was causing the issue all in one or two queries.
