@@ -50,19 +50,19 @@ Regular expressions can also be used for more complex querying. In the example b
 With such powerful querying tools, Kibana makes it easy to analyze logs and troubleshoot problems quickly.
 
 ### Thingsboard
-Most Internet of Things (IoT) devices such as sensors, GPS , meters generate highly granular data (at least per second). An example could be a fleet application which comprises of 2-3 temperature sensors, IMU sensors, GPS on each vehicle. 
+Most Internet of Things (IoT) devices such as sensors, GPS receivers, or power meters generate highly granular data (at least once per second). An example could be a fleet application comprising 2-3 temperature sensors, IMU sensors, and GPS on each vehicle. Typically, all data needs to be presented in real-time and in a meaningful way to the engineers. 
 
-Typically, all the data needs to presented in real-time and in a meaningful way to the engineers. In our above example, an engineer or operator may need to be alerted when the temperature of the vehicle is too high or in an event of an accident. Thingsboard is an open-source IoT platform that can be used to create such a real-time dashboard for device management. It can integrate the data from all the devices, process them, and take action on a set event.
+In our example, an engineer or operator may need to be alerted when the temperature of the vehicle is too high or in the event of an accident. Thingsboard offers an ideal solution to achieve this. Thingsboard is an open-source IoT platform that can be used to create real-time dashboards for device management. Thingsboard can integrate data from multiple devices, process them, and take action on a set event.
 
-Thingsboard supports lightweight IoT protocols - MQTT, CoAP, and network protocols like HTTP. 
+Thingsboard supports lightweight IoT protocols (MQTT, CoAP) and network protocols like HTTP. 
 
 A demo real-time dashboard of Thingsboard is shown below.
 
 ![Thingsboard GUI](/docker-tb-elk/images/thingsboard-example.png)
 
-The values can be filtered based on date-time. Thingsboard can be also used to perform transformations on the raw data. In the above example, the boolean value is converted to the string "ON" the Device status. An unexpected value or a value lower than the specified threshold occurs an alarm can be triggered which can be used to alert (using the Thingsboard rule engine) an operator on-site.
+The data values can be filtered based on date-time. Thingsboard can also be used to perform transformations on the raw data. In the above example, the boolean value is converted to the string "ON" shown as the Device status. If an unexpected value or a value lower than the specified threshold occurs, an alarm can be triggered. This alarm can be used to alert (using the Thingsboard rule engine) an operator on-site.
 
-Third-party services such as AWS IoT, Kinesis, Azure Event Hub can be integrated to send device stream data to the dashboard. Apart from basic analytics supported by Thingsboard, advanced analytics can also be performed by integrating with Kafka streams. 
+Third-party services such as AWS IoT, Kinesis or Azure Event Hub can be integrated to stream data to the dashboard. Apart from basic analytics supported by Thingsboard, advanced analytics can also be performed by integrating with Kafka streams. 
 
 Additionally, the dashboards can be published publicly. Internally, users with different levels of visibility and control can be created as needed.
 
