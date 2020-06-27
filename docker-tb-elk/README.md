@@ -73,12 +73,12 @@ Download and install docker on your computer
 https://docs.docker.com/docker-for-mac/install/
 ```
 
-Use git clone or download the code.
+Use git clone or download the code
 ```bash
 git clone https://github.com/evergreen-innovations/blogs
 ```
 
-Navigate to the folder.
+Navigate to the folder
 
 ```bash
 cd blogs/docker-tb-elk/ 
@@ -90,9 +90,7 @@ Everything is contained within the `docker-compose.yml` file
 docker-compose up -d
 ```
     
-This will start up all the services in the background.
-
-The command ```docker ps``` will give us a list of all active containers.
+This will start up all the services in the background. The command ```docker ps``` will give us a list of all active containers.
 
 ``` bash
 c72515ad8a3d       docker-tb-elk_thingsboard     "..."   ...      ...        0.0.0.0:1883->1883/tcp, 0.0.0.0:5683->5683/tcp, 0.0.0.0:9090->9090/tcp, 5683/udp   docker-tb-elk_thingsboard_1
@@ -116,7 +114,7 @@ Customer User: customer@thingsboard.org / customer
 ```
 ## Docker Integration
 
-We can see how docker to create four completely isolated servers, each with different dependencies. Even though Elastisearch and Kibana are on separate servers they can communicate using the network rules created by us in the ```docker-compose.yml``` and linking the service to network.
+We can see how Docker can be used to create four completely isolated servers, each with different dependencies. Even though Elastisearch and Kibana are on separate servers, they can communicate using the network rules created by us in the ```docker-compose.yml```, linking the services to the network.
 
 ```shell
 networks:
@@ -127,10 +125,9 @@ networks:
 networks:
       - elk
 ```
-Kibana and Logstash need Elasticsearch to be configured and running first. While initialization both the services check whether they can communicate with Elastisearch. In case the communication is not established the start up fails.
-The YAML key ```depends_on``` is used to specify the order of start up of the services. In this case, Kibana does not try to start until Elastisearch docker container is running.
+Kibana and Logstash need Elasticsearch to be configured and running first. While initializing both services, check whether they can communicate with Elastisearch. In case the communication is not established, the startup fails. The YAML key ```depends_on``` is used to specify the order of the startup of the services. In this case, Kibana does not try to start until the Elastisearch Docker container is running.
 
-Because our applications (Elasticsearch and Thingsboard) consist of data storage. We don't want to lose data everytime the docker containers are started and stopped. Docker volumes can be used to persist data in the Docker containers. The volumes can be used to share data between multiple containers. 
+Our Elasticsearch and Thingsboard applications contain data storage. We don't want to lose data every time the Docker containers are started and stopped. Docker volumes can be used to persist data in the Docker containers. These volumes can be used to share data between multiple containers. 
 
 ```yaml
 - type: volume
@@ -143,7 +140,7 @@ Because our applications (Elasticsearch and Thingsboard) consist of data storage
       - mytb-logs:/var/log/thingsboard
 ```
 
-We generally periodically take backups of the docker volumes and move it the cloud. This way even if the server comes down because of an issue, the docker container can be restarted with the latest volume backup attached. The applications starts up with the last backed up state. A ```docker volume ls``` will display the volumes created on the machine.
+We generally periodically take backups of the docker volumes and move it to cloud storage. This way, even if the server comes down because of an issue, the Docker container can be restarted with the latest volume backup attached. A ```docker volume ls``` will display the volumes created on the machine.
 
 ```yaml
 local               docker-tb-elk_elasticsearch
@@ -152,7 +149,7 @@ local               docker-tb-elk_mytb-logs
 ```
 
 ## Conclusion 
-In this blog we have deployed a four services with a single docker-compose file on your local machine. 
+In this blog, we have deployed four services with a single docker-compose file on a local machine. 
 
-This blog is the first in the series of blogs of demonstrating how the software tools deployed in this blog can be used along with Golang to create a real-time IoT device data dashboard and log management. Read the next [article](https://www.evergreeninnovations.co/blog-simulating-iot-devices-using-go/) to get started.
+This blog is the first of a series of blogs, setting the foundation of using Thingsboard, ELK and Docker. To read how to put these tools into practical use, read this [article](https://www.evergreeninnovations.co/blog-simulating-iot-devices-using-go/).
 
