@@ -1,5 +1,6 @@
-github.com/evergreen-innovations/blogs/modbus v0.0.0-20200608182401-37bf560e8c2f h1:5KGCqWJRGTof1LKI/MBfVfIbSuNkHLrbj9yDGtZpRGc=
-github.com/evergreen-innovations/blogs/modbus v0.0.0-20200608182401-37bf560e8c2f/go.mod h1:yG/OmblFT6bieJQ1Zo1J+RiQy9ZU4dcGlibQkA6OMOo=
+github.com/evergreen-innovations/blogs v0.1.0 h1:AwGVo5xANv78sDuF8ny+o+mhR4HULRyhzinog8sHeIk=
+github.com/evergreen-innovations/blogs/modbus v0.0.0-20200627010824-8ff29584d6eb h1:LTcODP1txslNLU62cjfsGxCCnG4+WrjwvIJcAm1f/1w=
+github.com/evergreen-innovations/blogs/modbus v0.0.0-20200627010824-8ff29584d6eb/go.mod h1:yG/OmblFT6bieJQ1Zo1J+RiQy9ZU4dcGlibQkA6OMOo=
 github.com/goburrow/modbus v0.1.0 h1:DejRZY73nEM6+bt5JSP6IsFolJ9dVcqxsYbpLbeW/ro=
 github.com/goburrow/modbus v0.1.0/go.mod h1:Kx552D5rLIS8E7TyUwQ/UdHEqvX5T8tyiGBTlzMcZBg=
 github.com/goburrow/serial v0.1.0 h1:v2T1SQa/dlUqQiYIT8+Cu7YolfqAi3K96UmhwYyuSrA=
