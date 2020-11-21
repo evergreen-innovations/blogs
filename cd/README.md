@@ -331,7 +331,7 @@ The mock services are now ready to be tested.
 
 * Navigate to the ```/opt``` folder. Your executables should be located here.
 
-![EC2](/images/ec2-opt.png)
+![EC2](images/ec2-opt.png)
 
 A summary of the executable for the mock services:
 
@@ -349,7 +349,7 @@ app3 (serviceA)
 
 * Navigate to a HTTP client, such as Postman. Perform a ```/get``` on serverC. 
 
-![EC2](/images/postman.png)
+![EC2](images/postman.png)
 
 An example /get for the EC2 server I have running now is shown below. The link will change based on the IP address or the domain name of the server.
 ``` shell
