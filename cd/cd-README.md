@@ -54,7 +54,7 @@ While configuring security groups, allow port 22 and 15000 access from at least 
 
 * Now select your instance, click on the ```Tags``` tab. Click on ```Manage tags```. Assign it a meaningful tag. CodeDeploy uses this tag to find the instance.
 
-![Tag EC2](/images/ec2-tag.png)
+![Tag EC2](images/ec2-tag.png)
 
 * SSH into the EC2 server. Refer [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html) on connecting to your EC2 instance.
 
@@ -65,15 +65,15 @@ The next step is to create an IAM role. We will need a role,which is assign to C
 
 * Under services, select ```IAM``` next. We will create a role with permissions to access EC2. Click on ```Roles -> Create Role```
 
-![IAM Role](/images/iam-role.png)
+![IAM Role](images/iam-role.png)
 
 * Select the service ```CodeDeploy```. Click on ```Next:Permissions```.
 
-![IAM Role](/images/role-2.png)
+![IAM Role](images/role-2.png)
 
 * The role should have the following policies attached. These are rather broad and should be made more specific (will be updated soon). 
 
-![IAM Role](/images/role-assignpolicy.png)
+![IAM Role](images/role-assignpolicy.png)
 
 **Note:** Refer [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html) for more info. To know more about roles, why and how they are used, see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
 
@@ -84,41 +84,41 @@ There is no additional charge for using CodeDeploy to deploy on AWS services - E
 
 * Once you sign in to AWS, start by selecting CodeDeploy under ```Services```.
 
-![AWS Services](/images/services.png "AWS Services")
+![AWS Services](images/services.png "AWS Services")
 
 * Under CodeDeploy, Select ```Applications``` -> ```Create Application```.
 
-![CodeDeploy Add Application](/images/create-application.png "Application")
+![CodeDeploy Add Application](images/create-application.png "Application")
 
 * Enter the Application Name and select compute platform drop-down. This will be EC2/On-premise.
 
-![Application Input](/images/application-form.png)
+![Application Input](images/application-form.png)
 
 * Once you create an Application. From the Applications dashboard, click on the Application and select ```Create Deployment Group```.
 
-![Deployment Group](/images/create-dg.png)
+![Deployment Group](images/create-dg.png)
 
 
 * For ```Create Deployment Group```, enter the information in the form. An example is shown below,
 
-![Application Input](/images/dg-form-1.png)
+![Application Input](images/dg-form-1.png)
 
 The tag used is specified by us in the EC2 section.
 
-![Application Input](/images/dg-form-2.png)
+![Application Input](images/dg-form-2.png)
 
 
 * Now, once the deployment group is created successfully, click on create deployment. This step is only to grant CodeDeploy to access the GitHub Repo. 
 
-![Application Input](/images/github-permissions-1.png)
+![Application Input](images/github-permissions-1.png)
 
 * Select ```My application is stored in  Github```.  Give it a name, and select Connect to GitHub. 
 
-![Application Input](/images/github-permissions-2.png)
+![Application Input](images/github-permissions-2.png)
 
 * This opens up another tab where you might need to login to GitHub again and grant access. 
 
-![Application Input](/images/github-permissions-3.png)
+![Application Input](images/github-permissions-3.png)
 
 * Once you do the above, exit the window (There is no need to click on the ```Create Deployment``` button). We will trigger the deployment from GitHub.
 
@@ -126,19 +126,19 @@ The tag used is specified by us in the EC2 section.
 
   * Go to the Github Setting page.
     
-    ![Application Input](/images/github-1.png)
+    ![Application Input](images/github-1.png)
       
   * Under your personal account, go to Applications, Authorized OAuth Apps tab. 
       
-      ![Application Input](/images/github-2.png)
+      ![Application Input](images/github-2.png)
   
   * Click on the Application you want to grant organization access to. Click on Grant organization access. You can only do this if your GitHub admin has created a role which allows you grant permissions to third-party applications. If not, contact your administrator.
       
-  ![Application Input](/images/github-3.png)
+  ![Application Input](images/github-3.png)
       
   * You can confirm the permissions by clicking on the ```Third-party access``` of your organization.
       
-  ![Application Input](/images/github-4.png)
+  ![Application Input](images/github-4.png)
       
   * Finally, add your AWS user credentials with permission to access CodeDeploy to Github Secrets. 
        
@@ -314,13 +314,13 @@ Before reading further, please read the next section and come back to this step.
 
 To test the above, we trigger the dev branch manually. Click on the Actions tab to check the jobs running and the workflow status. 
 
-![Actions](/images/actions-1.png)
+![Actions](images/actions-1.png)
 
 Let's take a look at ```DeployOnAWS``` workflow. It has one job called ```Deploy```, and steps for each job are on the right.
-![Actions](/images/actions-2.png)
+![Actions](images/actions-2.png)
 
 One can look output of each step. For instance, lets look at the output for ```Test``` workflow below,
-![Actions](/images/actions-3.png)
+![Actions](images/actions-3.png)
 
 
 ## Test the Mock Services
