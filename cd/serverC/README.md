@@ -1,5 +1,5 @@
-# serviceA
-CICD Test Mock Service A
+# serverC
+CICD Test Mock Server C
 
 1. Create an Application on CodeDeploy. 
 2. Create a deployment group for the code.
