@@ -1,0 +1,39 @@
+# This GitHub Actions workflow gets trigger on a push event with tag v*
+name: DeployOnAWS
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+        - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+        
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+          with:
+            persist-credentials: false
+            fetch-depth: 0
+        
+      
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+            aws-region: us-east-2
+        
+        
+        - name: Push to EC2
+          id: deploy
+          run: |
+            # Assuming the Deployment Group is already setup
+            aws deploy create-deployment \
+            --application-name serviceA \
+            --deployment-group-name serviceaDeploy \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}

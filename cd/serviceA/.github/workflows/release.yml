@@ -1,0 +1,56 @@
+# This GitHub Actions workflow gets trigger on a push event on main branch
+name: Release
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    
+jobs:
+  release:
+    name: Release on GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          ref: main
+      
+      - name: Create local changes
+        run: |
+              git config --local user.email "alekhya@evergreeninnovations.co"
+              git config --local user.name "alekhya@evergreeninnovations.co"
+              git merge --no-ff --no-edit origin/dev
+
+      - name: Get dependencies
+        run: |
+            go get -v -t -d ./...
+            if [ -f Gopkg.toml ]; then
+                curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+                dep ensure
+            fi
+    
+      - name: Validates GO releaser config
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: check
+          
+      - name: Remove old build
+        run: |
+              rm app3
+          
+      - name: Create local changes
+        run: |
+              go build -o app3
+        # Change tag if already exists
+      - name: Commit files
+        run: |
+              git add .          
+              git commit -m "go build binary" -a
+              git tag v0.0.6
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+            github_token: ${{ secrets.GOBUILD_PAT_2 }}
+            branch: main #${{ github.ref }}
+            tags: true

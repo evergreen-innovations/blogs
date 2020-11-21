@@ -1,0 +1,66 @@
+# This GitHub Actions workflow gets trigger on a push event on dev branch
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Version tag'     
+        required: true  
+  pull_request:
+    
+jobs:
+  release:
+    name: Release on GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          ref: main
+      
+      - name: Create local changes
+        run: |
+              git config --local user.email "alekhya@evergreeninnovations.co"
+              git config --local user.name "alekhya@evergreeninnovations.co"
+              git merge --no-ff --no-edit origin/dev
+
+      - name: Get dependencies
+        run: |
+            go get -v -t -d ./...
+            if [ -f Gopkg.toml ]; then
+                curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+                dep ensure
+            fi
+    
+      - name: Validates GO releaser config
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: check
+      
+      - name: Remove old build
+        run: | 
+              if [ -f "app1" ]
+              then
+                rm app1
+              fi
+        shell: bash
+
+      - name: Create local changes
+        run: |
+              go build -o app1
+        # Change tag if already exists
+      - name: Commit files
+        run: |
+              git add .
+              git config --local user.email "alekhya@evergreeninnovations.co"
+              git config --local user.name "alekhya@evergreeninnovations.co"
+              git push origin main
+              git commit -m "Add changes" -a
+              git tag ${{ github.event.inputs.releaseVersion }}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+            github_token: ${{ secrets.GOBUILD_PAT }}
+            branch: main #${{ github.ref }}
+            tags: true
