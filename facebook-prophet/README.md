@@ -47,7 +47,7 @@ Once you've downloaded the CSV from kaggle, you're ready to start the explorator
 **It should be noted that the full jupyter notebooks for both analysis and forecasting can be found [here](), however most important code will be displayed in this blog.**
 
 Like most python data projects, lets import our dependencies, load in our data, and get a quick feel for what the data looks like:
-```python:
+```python
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt 
@@ -92,7 +92,7 @@ The valuable info is in the number of NON-NULL values there are in the columns r
 
 With this new information in hand, lets clean up those NAN values and calculate a TOTAL SOLAR column in our dataframe.  For simplicity, in this forecast we will be treating all solar sources as one.
 
-```
+```python
 # fill in na values with 0 
 full_data['SOLAR'] = full_data['SOLAR'].fillna(0)
 full_data['SOLAR PV'] = full_data['SOLAR PV'].fillna(0)
@@ -142,7 +142,7 @@ dtypes: datetime64[ns](1), float64(10), int64(4)
 memory usage: 7.7 MB
 ```
 Now that we've gotten a very high level idea of what's going on in the data (like the SOLAR column turning into SOLAR PV and SOLAR THERMAL in 2013), lets begin to decompose some of the trends we may expect to see in the time series data.  Since we know that solar is dependent on the sun (duh! :) ), there seems to be good reason to expect some sort of daily trend to emerge.  Here is a code snippet I used to create some charts to begin to explore the daily seasonality of the solar production:
-```python:
+```python
 # create some plots to look at the general daily trend in solar production 
 partial_data = pd.DataFrame(full_data.loc[full_data.TIMESTAMP > pd.to_datetime('2012-12-31'),['SOLAR TOTAL','SOLAR PV','SOLAR THERMAL','Hour']])
 partial_data.Hour = partial_data.Hour.map(lambda x : int(x))
@@ -172,7 +172,7 @@ Returns these three charts:
 
 Well, I suppose these charts are far from a surprize, solar power seems to generally reflect the time of day.  Perhaps a more interesting topic these charts shed light on would be determining the cause of the large interquartile range shown on the boxplot charts.  Lets take another couple looks at the data to see if we an extract any more valuable information.
 
-```python:
+```python
 ## Lets take a look at the total solar production per year in the entire data set 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters() #makes datetime work 
@@ -214,7 +214,7 @@ These charts really seem to show some valuable information! Each dot is one hour
  
 Two final plots to help us understand the way the trends may be decomposed when building forecasts with Prophet:
 
-```python:
+```python
 # Create some grouped tables for analysis and charting - we're only concerning ourselves with SOLAR TOTAL PRODUCTION 
 # group to the year and month, calculate sum of total solar production, and sum of individual solar production types
 
@@ -254,7 +254,7 @@ plt.show()
 ![](Charts/rollingAvg_solar.png)
 
 
-```python:
+```python
 # Create a dataframe to generate a boxplot from, looking at the average production values across days and months
 chart['month'] = chart.index.month
 chart['hour'] = chart.index.hour
@@ -277,7 +277,7 @@ plt.show()
 Now that we've spent some time getting used to the time series data and building some expectations related to the existing trends in the data, we're ready to start building a model and building some forecasts.
 To keep it neat, and just a bit more organized, we'll start a new jupyter notebook for the purpose of building the model:
 ### Import Dependencies 
-```python:
+```python
 # import dependencies
 import pandas as pd 
 import numpy as np
@@ -315,7 +315,7 @@ Above, we were simply repeating the base data cleaning and data type transformat
 
 ### Build Proper Data Frame
 Facebook prophet expects a specific input dataframe, one with a ```ds``` column and a ```y``` column.  As we'll see shortly, there can be quite a few more additional columns added to this dataframe, but for a baseline model, Prophet is just expecting the two columns we define.  For simplicity of testing the accuracy of the model, we will cut off the last year of data in order to see how well the model generalizes onto unknown data.
-```python:
+```python
 # create the dataframe for fb prophet, it expects specific input dataframe
 model_data = pd.DataFrame(full_data.loc[full_data.TIMESTAMP.dt.year > 2013,['TIMESTAMP', 'SOLAR TOTAL']])
 
@@ -331,7 +331,7 @@ test = model_data.loc[model_data.ds.dt.year >= 2017, :]
 
 ### Initialize and fit a Prophet Model
 Facebook Prophet follows the SkLearn API structure, where we initialize a model and call a ```fit``` method with the training data as the data parameter.  
-```python:
+```python
 # fit a default parameter model to the data
 model = Prophet()
 model.fit(train)
@@ -356,7 +356,7 @@ Here, since there are so many points connected by blue lines, the prediction pre
 
 While this chart is certainly helpful and valuable, sometimes I like to plot the test and training data sets, and then plot the predicitons across the top to see how the model is generally doing at generalizing a trend.
 
-```python:
+```python
 # look at it in a differnt way 
 plt.figure(figsize=(15,10))
 
@@ -382,7 +382,7 @@ Returns:
 For just throwing a data set into a default model, I'd say those predictions are pretty impressive!  There is clearly quite a bit of room to improve the accuracy, particularly in our test year, but lets start with redefining a training data frame.  Here we define a function that returns a boolean based off the time series data column.  The goal of this boolean column will be to indicate when an "on" and "off" daily seasonality should be applied.  In the analysis section, it was pretty obvious that the longer days between the Spring and Fall equinox's are going to have a significantly different daily solar production trend than the shorter and less solar intensive winter months.  Further, in the longer days, the sun's rays are intersecting the earths atmosphere at a more perpendicular angle, and therefore are traveling through less atmosphere before reaching the surface, so the rays hitting the solar pannels will be of slighly higher energy.  
 We also add a ```cap``` column to the data frame in order to apply a logistic growth model to the overall trend in the data, a cap column is required by Prophet for logistic growth.
 
-```python:
+```python
 # now lets tune some stuff!
 def on_season(ds):
     date = pd.to_datetime(ds)
@@ -418,7 +418,7 @@ Now that we've spiced up our training data a bit, lets add some parameters to th
 
 We also define our on and off season daily seasonality, this effect will become more obvious in a few following charts.  When defining a seasonality, you need a boolean column in the provided training data column in order to tell the model when that seasonality is in effect.  
 
-```python:
+```python
 model = Prophet(changepoint_range=.8,weekly_seasonality=False,daily_seasonality=False,yearly_seasonality=150,
                growth='logistic',changepoint_prior_scale=.01,seasonality_prior_scale=20)
 
@@ -430,7 +430,7 @@ model.fit(train)
 
 Make a future dataframe like above, but now we need to apply the same function to create the on and off seasons.  Since the seasonality is determined by the given month, it's easy to apply the same seasonality to the "future" data.  
 
-```python:
+```python
 future = model.make_future_dataframe(periods=365*24, freq='H')
 
 future['on_season'] = future['ds'].apply(on_season)
@@ -442,7 +442,7 @@ forecast = model.predict(future)
 ```
 
 Import another Prophet package to help visualize the changes in changepoint prior scale that we made, and plot the generated forecast:
-```python: 
+```python
 from fbprophet.plot import add_changepoints_to_plot
 
 fig = model.plot(forecast)
@@ -464,7 +464,7 @@ Returns:
 
 Recreate previous chart to see how the predictions have changed:
 
-```python:
+```python
 train.y = train.y**3
 test.y = test.y**3
 forecast.yhat = forecast.yhat**3
@@ -493,7 +493,7 @@ Returns:
 
 Seems like the model is fitting the solar production data pretty well now! But of course, lets not leave it to visuals to tell us how well the model is generalizing.  
 
-```python:
+```python
 #lets get some accuracy statistics
 from sklearn.metrics import r2_score, mean_absolute_error
 
@@ -544,7 +544,7 @@ plt.show()
 
 Do it again without the 0's, just to dial in the R2 value and make the histograms a bit more information dense:
 
-```python:
+```python
 testDf = testDf.loc[testDf.y != 0]
 sns.jointplot(x=testDf.y, y=testDf.yhat)
 plt.text(-3000,9500,s='R2: {}'.format(round(r2_score(testDf.y, testDf.yhat),3)), fontweight='bold')
@@ -556,7 +556,7 @@ plt.show()
 
 Finally, lets just look at the test year of 2017, and group the data a bit to make it easier to get the big picture of how well this model does or doesn't work.  Here we will also print a few summary values to see how the model does at an aggregate level.
 
-```python:
+```python
 # lets group the data a bit to get a better feel for the accuracy of this version
 plot = testDf[['y','yhat']]
 
