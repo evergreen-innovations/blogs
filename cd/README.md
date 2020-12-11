@@ -146,14 +146,14 @@ The tag used is specified by us in the EC2 section.
 #!/bin/bash
 /opt/app3 > /dev/null 2> /dev/null < /dev/null &
 ```
-In this example, the executables are place in the /opt directory of the EC2 instance.
+In this example, the executables are placed in the /opt directory of the EC2 instance.
 
 ```shell
 files:
   - source: /app1
     destination: /opt
 ```
-Your, GitHub workflow is all setup now to access and deploy application using CodeDeploy. Repeat the steps for the other two services.
+Your GitHub workflow is all setup now to access and deploy applications using CodeDeploy. Repeat the steps for the other two services.
 
 ## Actions 
 
