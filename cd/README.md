@@ -56,10 +56,10 @@ While configuring security groups, allow port 22 and 15000 access from at least 
 
 * SSH into the EC2 server (see guide [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html))
 
-* Install the code deployer agent on the EC2 server (see guide [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html) for a Ubuntu server.
+* Install the code deployer agent on the EC2 server (see guide [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html)) for a Ubuntu server.
 
 ### IAM Role
-The next step is to create an IAM role. We will need a role,which is assign to CodeDeploy, with permission to access the EC2 instance
+The next step is to create an IAM role. We will need a role, which is assigned to CodeDeploy, with permission to access the EC2 instance
 
 * Under services, select ```IAM``` next. We will create a role with permissions to access EC2. Click on ```Roles -> Create Role```
 
@@ -69,11 +69,11 @@ The next step is to create an IAM role. We will need a role,which is assign to C
 
 ![IAM Role](images/role-2.png)
 
-* The role should have the following policies attached. These are rather broad and should be made more specific (will be updated soon). 
+* The role should have the following policies attached. These are rather broad and could be made more specific. 
 
 ![IAM Role](images/role-assignpolicy.png)
 
-**Note:** Refer [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html) for more info. To know more about roles, why and how they are used, see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
+**Note:** See [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html) for additional info. To find out more about roles, why and how they are used, see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
 
 ### CodeDeploy Settings
 AWS CodeDeploy automates your software deployments, allowing for reliable and rapid deployment. CodeDeploy can be used to deploy the application to Amazon EC2, AWS Fargate, AWS Lambda, or your on-premises servers. 
@@ -120,7 +120,7 @@ The tag used is specified by us in the EC2 section.
 
 * Once you do the above, exit the window (There is no need to click on the ```Create Deployment``` button). We will trigger the deployment from GitHub.
 
-* If this is first time that the organization is linking CodeDeploy to GitHub. There are additional steps that need to be performed on GitHub. 
+* If this is the first time that the organization is linking CodeDeploy to GitHub, there are additional steps that need to be performed on GitHub. 
 
   * Go to the Github Setting page.
     
