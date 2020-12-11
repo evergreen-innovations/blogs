@@ -2,23 +2,21 @@
 
 ## Motivation
 
-Continuous delivery (CD) refers to a process that automates software deployment from the code repository. As more teams are adopting agile software development methodology, the code changes more frequently. Following continuous delivery practices allow the software developers to focus on application development, code testing, and security since the deployment is automated. Additionally, the code could be improved continuously; it can be deployed reliably, with scheduled and minimal downtime.
+Continuous delivery (CD) refers to a process that automates software deployment from a code repository. As more teams are adopting agile software development methodologies, the code changes more frequently. Following continuous delivery practices allows the software developers to focus on application development, code testing, and security, since the deployment is automated. Additionally, the code can be improved continuously; it can be deployed reliably, with scheduled and minimal downtime.
 
-This post introduces Github actions, explain some terminology, and automate deployment for three mock microservices from Github code repository to AWS EC2 server.
+This post introduces Github actions, explains some of the common terminology, and shows automated deployment for three mock microservices from a Github code repository to an AWS EC2 server.
 
-## Github Actions
+## GitHub Actions
 
-Github Actions is a continuous delivery product introduced by Github in 2019. If you are not familiar with Github, Github is the most widely used code repository platform for version control and collaboration. It has the largest community of open source developers. Hence, vast community support is accessible to developers for debugging.
+GitHub Actions is a continuous delivery product introduced by GitHub in 2019. GitHub Actions integrates seamlessly with Github. In its free tier, GitHub offers 2000 action minutes/month, which is sufficient for small to medium code bases.
 
-Github Actions integrates seamlessly with Github. In its free tier, Github offers 2000 action minutes/ month, which is sufficient for small to medium code bases.
+## GitHub terminology
 
-## Github terminology
+GitHub Actions allows the developer to create ```workflows``` to automatically test, build, release and deploy code. YAML files are used to define workflows and configurations. You can learn more about YAML [here](https://yaml.org/).
 
-GitHub Actions allows the developer to create ```workflows``` to automatically test, build, release and deploy code. YAML files are used to define workflows and configuration. You can learn more about YAML [here](https://yaml.org/).
+A workflow is an automated procedure that you can add to your repository. Workflows are made up of one or more ```jobs```. These can be scheduled, triggered by an event, or executed manually. Each job has individual tasks that are executed as part of the job, referred to as ```steps```.
 
-A workflow is an automated procedure that you add to your repository. Workflows are made up of one or more ```jobs```. These can be scheduled, triggered by an event, or manually. Each job has individual tasks that are executed as part of the job, referred to as ```steps```.
-
-Another component in a workflow is a ```runner```. A ```runner``` is a virtual machine hosted by Github on which the jobs are run. One can use Github hosted or self-hosted runners. You can learn more about GitHub Actions [here](https://docs.github.com/en/free-pro-team@latest/actions).
+Another component in a workflow is a ```runner```. A ```runner``` is a virtual machine hosted by Github on which the jobs are run. One can use GitHub hosted or self-hosted runners. You can learn more about GitHub Actions [here](https://docs.github.com/en/free-pro-team@latest/actions).
 
 
 ## Mock microservices
