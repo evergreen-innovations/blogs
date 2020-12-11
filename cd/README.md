@@ -204,13 +204,13 @@ on:
   pull_request:
 ```
 
-Job in the workflow include the following steps:
+Jobs in the workflow include the following steps:
 
 1. Checkout the code from main branch
 1. Merge the branch dev into main
-1. Get the go dependencies using ```go get```
-1. Great the go executable using ```go build```
-1. Commit and push the changes on main branch with the version number
+1. Get the Go dependencies using ```go get```
+1. Create the Go executable using ```go build```
+1. Commit and push the changes on the main branch with the version number
 
 ```yaml
   # job name
@@ -271,7 +271,7 @@ Job in the workflow include the following steps:
             tags: true
 ```
 
-The push on the ```main``` with tag ```v*``` triggers the ```deploy.yml``` workflow. This trigger is defined as shown below:
+A push on the ```main``` branch with tag ```v*``` triggers the ```deploy.yml``` workflow. This trigger is defined as follows:
 
 ```yaml
 on:
@@ -317,7 +317,7 @@ To test the above, we trigger the dev branch manually. Click on the Actions tab 
 Let's take a look at ```DeployOnAWS``` workflow. It has one job called ```Deploy```, and steps for each job are on the right.
 ![Actions](images/actions-2.png)
 
-One can look output of each step. For instance, lets look at the output for ```Test``` workflow below,
+One can look at the output of each step. For instance, let's look at the output for ```Test``` workflow below,
 ![Actions](images/actions-3.png)
 
 
@@ -325,7 +325,7 @@ One can look output of each step. For instance, lets look at the output for ```T
 
 The mock services are now ready to be tested. 
 
-* SSH into the EC2 server. To see how to do this refer [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html).
+* SSH into the EC2 server (see [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html).)
 
 * Navigate to the ```/opt``` folder. Your executables should be located here.
 
@@ -339,7 +339,7 @@ app2 (serverB)
 app3 (serviceA)
 ```
 
-* Run the app3. 
+* Run app3. 
 
 ```shell
 ./app3
@@ -349,7 +349,7 @@ app3 (serviceA)
 
 ![EC2](images/postman.png)
 
-An example /get for the EC2 server I have running now is shown below. The link will change based on the IP address or the domain name of the server.
+An example /get for the EC2 server we have running is shown below. The link will change based on the IP address or the domain name of the server.
 ``` shell
 http://<public dns of ec2 instance>:15000/get
 ```
