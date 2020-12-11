@@ -20,11 +20,11 @@ Another component in a workflow is a ```runner```. A ```runner``` is a virtual m
 
 
 ## Mock microservices
-As mentioned before, we will use Actions to deploy three microservices to an [EC2](https://aws.amazon.com/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc) instance. We have three mock microservices written in Go - serviceA, serverB, serverC. These three microservices communicate using HTTP REST API. In this example,
+We will use GitHub Actions to deploy three microservices to an [EC2](https://aws.amazon.com/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc) instance. We have three mock microservices written in Go - serviceA, serverB and serverC. These three microservices communicate using HTTP REST API. In this example:
 
 * ServiceA sends a random value between 0-10 to ```http://localhost:9000/post```
 
-* ServerB hosts the POST endpoint at - ```http://localhost:9000/post```. B on receiving a value from A, adds a 100 and sends to it serverC.
+* ServerB hosts the POST endpoint at - ```http://localhost:9000/post```. Our example serverB, on receiving a value from serviceA, adds a 100 and sends to it serverC.
 
 * ServerC has two endpoints.
   * GET endpoint ```http://localhost:15000/get``` to display all the values sent.
@@ -54,9 +54,9 @@ While configuring security groups, allow port 22 and 15000 access from at least 
 
 ![Tag EC2](images/ec2-tag.png)
 
-* SSH into the EC2 server. Refer [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html) on connecting to your EC2 instance.
+* SSH into the EC2 server (see guide [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html))
 
-* Install the code deployer agent on the EC2 server. Refer [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html) to read how to perform that on an Ubuntu server.
+* Install the code deployer agent on the EC2 server (see guide [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html) for a Ubuntu server.
 
 ### IAM Role
 The next step is to create an IAM role. We will need a role,which is assign to CodeDeploy, with permission to access the EC2 instance
