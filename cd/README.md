@@ -356,8 +356,8 @@ http://<public dns of ec2 instance>:15000/get
 
 If you cannot reach the server, check that you have added a rule to allow TCP traffic on port 15000 in the security groups.
 
-## Comparison with Jenkins
-One of most common questions we are asked are the benefits of using Github action over Jenkins. Jenkins is a widely used continuous delivery application. Although Jenkins is being used in the industry for over ten years, it adds substantial cost to the company. It adds cost of not only self-hosting and maintaining the Jenkins server, but also developer time. For most use cases, Github Actions can fulfill the criteria and perform all actions Jenkins, such as parallel jobs, container-based builds, with less overhead. If not, Jenkinsfiles can be run inside a Github actions docker container.
+## GitHub Actions vs. Jenkins
+One of most common questions we are asked are the benefits of using GitHub action over Jenkins. Jenkins is a widely used continuous delivery application. Although Jenkins has been used in the industry for over ten years, it adds substantial costs. It adds cost of not only self-hosting and maintaining the Jenkins server, but also developer time. For many use cases, GitHub Actions can fulfill the criteria and perform all actions in a similar fashion as Jenkins, such as parallel jobs and container-based builds, but with less overhead when compared to Jenkins. If more custom actions are needed, Jenkins files can be run inside a GitHub actions Docker container.
 
 ## Conclusion
-This blog has explained the steps involved deploying applications on EC2 servers using Github Actions. Pleas contact us if you any other questions about this blog or any other DevOps topics you want us write about.
+This blog explained the steps involved in deploying applications on EC2 servers using GitHub Actions. Please contact us if you have any questions about this blog or any other DevOps topics you want us write about.
