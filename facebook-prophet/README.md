@@ -24,34 +24,33 @@ Other, more powerful time series methods include ARIMA (Auto Regressive Integrat
 
 # Facebook Prophet 
 
-Rather than attempting to re-write already fantastic documentation, I'll leave the detailed docs to the data scientists over at Facebook.  The [documentation](https://facebook.github.io/prophet/docs/quick_start.html#python-api) is a great place to get a deeper understanding for how the modelling package works, and gives a few great general use examples.  For the purpose of this blog, it's proficient to understand that Facebook Prophet is an additive regression model with four main components of:
-1. Piecewise linear or logistic growth curve trend.  Prophet automatically detects changes in trends by determining changepoints in the data, or the user can optionally define their own set of changepoints.
+The Facebook Prophet [documentation](https://facebook.github.io/prophet/docs/quick_start.html#python-api) is a great place to get a deeper understanding of how the modeling package works, and gives a few great general use examples. For the purpose of this blog, it's sufficient to understand that Facebook Prophet is an additive regression model with four main components including:
+1. Piecewise linear or logistic growth curve trend. Prophet automatically detects changes in trends by determining change-points in the data, or the user can optionally define their own set of change-points.
 1. Yearly seasonal component modeled using Fourier series.  
 1. A weekly seasonal component using dummy variables.
 1. A user-provided list of important holidays.
 
-While these are the four main pillars that FBProphet stands on, the greatest analyst benefit seems to be in the intuitive parameters that even people without extensive data science experience can easily understand and tune.  This topic will be covered in detail and with examples when we build and test a model later on, but is mentioned here to point out another benefit of FBProphet, being able to produce a mix of fully automated forecasts and analyst-in-the-loop forecasts to generate accurate predictions for a variety of business needs.   
+While these are the four main pillars that Prophet stands on, the greatest analyst benefit seems to be in the intuitive parameters. This topic will be covered in detail and with examples when we build and test a model later on, but is mentioned here to point out another benefit of Prophet, being able to produce a mix of fully automated forecasts and analyst-in-the-loop forecasts to generate accurate predictions for a variety of business needs.   
 
-## Installation Guide
+## Installation guide
 
-There are of course installation instructions provided when reading through the Prophet documentation; however, it never seems to go as smoothly as described, so I figured it's worth detailing a MacOS install here:
+For MacOS a typical installation sequence is:
 1. Download and install Xcode from the app store
 1. ```pip install cython```
 1. ```pip install pystan```
 1. ```pip install fbprophet```
 
-The official documentation recommends installing via ```conda install``` with Anaconda, however, running the provided ```conda install -c conda-forge fbprophet``` has never worked for me, so I've found the above method to work the best.  Generally speaking, it's not the best idea to mix package managers like ```conda``` and ```pip```, but I haven't experienced any problems with this installation method while working with other dependencies or packages yet.
+The official documentation recommends installing via ```conda install``` with Anaconda. However, running the provided ```conda install -c conda-forge fbprophet``` has never worked for us, so we have found the above method to work the best.  Generally speaking, it's not the best idea to mix package managers like ```conda``` and ```pip```, but we have not experienced any problems with this installation method while working with other dependencies or packages yet.
 
 # Process 
-Now that we've got the tools installed and have an idea of what time series analysis is, lets look at the steps we'll be going through:
+This blog will guide through the following steps:
 1. [Gather Data](#Gathering-Data) 
 1. [Data Cleaning and Analysis](#Data-Cleaning-and-Exploratory-Analysis)
 1. [Model building and validation](#Model-Building-and-Validation) 
 1. [Conclusion](#Conclusion) 
 
-## Gathering Data 
-Fortunately, data science is a popular topic, and [Kaggle]() is a great source for finding data sets to try new modeling techniques and methods with!  For this project, a simple search of "Renewable Energy" in the data sets section will return quite a few data sets, and we have selected [this]() data set, consisting of hourly production values spanning from 2011 to the end of 2017 from all renewable sources providing power to the CAISO (California Independent System Operator) managed grid. The CAISO grid is responsible for transmitting 80% of California's energy, as well as a small section of Nevada.  For the purpose of this blog, we will only be forecasting total solar production, but the data set can allow for significant other analysis and forecasting opportunities related to the larger picture of energy flow through most of California.  
-Once you've downloaded the CSV from kaggle, you're ready to start the exploratory analysis!
+## Gathering data 
+For this blog we have selected a Kaggle data set consisting of hourly production values from 2011 to 2017 from all renewable sources providing power to the CAISO (California Independent System Operator) managed grid. The CAISO grid is responsible for transmitting 80% of California's energy, as well as a small section of Nevada. We will only be forecasting total solar production, but the data set allows for a range of other analysis and forecasting opportunities related to the larger picture of energy flow through most of California. 
 
 ## Data Cleaning and Exploratory Analysis
 **It should be noted that the full jupyter notebooks for both analysis and forecasting can be found [here](), however most important code will be displayed in this blog.**
