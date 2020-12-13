@@ -4,9 +4,15 @@ Exploring time series data and making forecasts with Facebook Prophet
 
 ![](Charts/resampled_production.png)
 
-# Overview 
+# Motivation 
 
-For many data scientists, data analysts, and general data enthusiests, time series data and time series analysis are essential pieces in their data toolkit.  While time series data can fall under many categories and can be leveraged into useful information for most businesses; industrial renewable energy projects more heavily rely on time series data and analysis to help manage the expected flow of energy to and from the grid.  Unlike non-renewable energy sources, that can be ramped up or down, or turned on or off based off the current load on the grid, renewable energy systems (without storage included) are at the whim of nature as to when and how much energy is produced.  Due to the inability to simply control how much power a given renewable source is generating, being able to have a (generally) reliable forecast of the expected production allows grid operators and grid management systems to build a plan for how energy will be delivered in the upcoming days.  In this blog, we will cover the essential topics for creating a time series analysis, and will be detailing how to use the [Facebook Prophet](https://facebook.github.io/prophet/) Python Package to help build the machine learning algorithm that will model the trends and relationships in the data and make predictions of solar production values based off the input date time variable.  
+For data scientists, data analysts, and general data enthusiasts alike, time series data and time series analysis are essential pieces in their data toolkit. In the context of our work at Evergreen Innovations, many industrial renewable energy projects heavily rely on time series data and analysis to help manage the expected flow of energy to and from the grid.
+
+Unlike non-renewable energy sources, that can be ramped up or down based off the current load on the grid, renewable energy systems (without storage included) are at the whim of nature as to when and how much energy is produced. Due to the inability to simply control how much power a given renewable source is generating, being able to have a reliable forecast of the expected production is key.
+
+In this blog, we will cover the essential topics for creating a time series analysis, and will be detailing how to use the [Facebook Prophet](https://facebook.github.io/prophet/) Python Package to help build the machine learning algorithm that models the trends and relationships in the data. We will use this package to make predictions of solar production values based off the input date time variable.
+
+# What are time series data? 
 
 As the name suggests, time series data, analysis, and forecasting are all centered around the idea of data points being tied to a Date or DateTime index.  Even though this is rarely the case for real world data (missing data points are common), time series analysis generally relies on data being sampled at regular intervals, meaning the time between data points should be consistent across the data set.  Re-sampling methods will be briefly covered when we look at the data cleaning and preparation steps for building time series forecasting, however if data cannot be collected/ sampled/ stored at mostly regular intervals, it might be worth asking the question of if the given business problem really stands to benefit from a true time series analysis? Or could other machine learning or statistical modeling methods better serve your purpose?
 
