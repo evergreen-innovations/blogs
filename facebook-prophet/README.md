@@ -52,10 +52,9 @@ This blog will guide through the following steps:
 ## Gathering data 
 For this blog we have selected a Kaggle data set consisting of hourly production values from 2011 to 2017 from all renewable sources providing power to the CAISO (California Independent System Operator) managed grid. The CAISO grid is responsible for transmitting 80% of California's energy, as well as a small section of Nevada. We will only be forecasting total solar production, but the data set allows for a range of other analysis and forecasting opportunities related to the larger picture of energy flow through most of California. 
 
-## Data Cleaning and Exploratory Analysis
-**It should be noted that the full jupyter notebooks for both analysis and forecasting can be found [here](), however most important code will be displayed in this blog.**
+## Data cleaning and exploratory analysis
 
-Like most python data projects, lets import our dependencies, load in our data, and get a quick feel for what the data looks like:
+First, let's import our dependencies, load in our data, and get a quick feel for what the data looks like:
 ```python
 import numpy as np
 import pandas as pd
@@ -97,9 +96,7 @@ Data columns (total 10 columns):
 dtypes: float64(9), object(1)
 memory usage: 5.2+ MB
 ```
-The valuable info is in the number of NON-NULL values there are in the columns related to SOLAR production.  After a bit of digging around, it seems that since this data set covers a broad range of time (2011 - 2017), the nulls shown in some fo the solar values are due to different definitions over time.  It seems that solar has gone from being considered one source by CAISO to being considered two sources depending on if it's PV (photovoltaic) or thermal solar.  
-
-With this new information in hand, lets clean up those NAN values and calculate a TOTAL SOLAR column in our dataframe.  For simplicity, in this forecast we will be treating all solar sources as one.
+The valuable info is the number of NON-NULL values there are in the columns related to SOLAR production. It seems that since this data set covers a broad range of time (2011 - 2017), the nulls shown for the solar values are due to different definitions over time. It appears that solar has gone from being considered one source by CAISO to being considered two sources, depending on whether it is PV (photovoltaic) or thermal solar. With this information in hand, let's clean up the NAN values and calculate a TOTAL SOLAR column in our dataframe.  For simplicity, our forecast will be treating all solar sources as one.
 
 ```python
 # fill in na values with 0 
@@ -107,23 +104,18 @@ full_data['SOLAR'] = full_data['SOLAR'].fillna(0)
 full_data['SOLAR PV'] = full_data['SOLAR PV'].fillna(0)
 full_data['SOLAR THERMAL'] = full_data['SOLAR THERMAL'].fillna(0)
 
-
 # Create a combined column now that there are no nulls
 full_data['SOLAR TOTAL'] = full_data['SOLAR']+full_data['SOLAR PV']+full_data['SOLAR THERMAL']
-
-
 
 # Convert timestamp column to pandas datetime data type
 full_data['TIMESTAMP'] = pd.to_datetime(full_data['TIMESTAMP'])
 full_data['TIMESTAMP'] = pd.to_datetime(full_data['TIMESTAMP'])
-
 
 # Allows us to access the "dt" property of column and included methods
 full_data['MONTH'] = full_data['TIMESTAMP'].dt.month
 full_data['YEAR'] = full_data['TIMESTAMP'].dt.year
 full_data['DAY'] = full_data['TIMESTAMP'].dt.day
 full_data['HOUR'] = full_data['TIMESTAMP'].dt.hour
-
 
 full_data.info()
 ```
@@ -150,7 +142,7 @@ Data columns (total 15 columns):
 dtypes: datetime64[ns](1), float64(10), int64(4)
 memory usage: 7.7 MB
 ```
-Now that we've gotten a very high level idea of what's going on in the data (like the SOLAR column turning into SOLAR PV and SOLAR THERMAL in 2013), lets begin to decompose some of the trends we may expect to see in the time series data.  Since we know that solar is dependent on the sun (duh! :) ), there seems to be good reason to expect some sort of daily trend to emerge.  Here is a code snippet I used to create some charts to begin to explore the daily seasonality of the solar production:
+Based on this very high level understanding of our data (like the SOLAR column turning into SOLAR PV and SOLAR THERMAL in 2013), let's begin to decompose some of the trends we may expect to see in the time series data. Since we know that solar production is strongly correlated to solar irradiation, there seems to be good reason to expect some daily trends to emerge. Here is a code snippet we used to create charts to begin to explore the daily dependency of the solar production:
 ```python
 # create some plots to look at the general daily trend in solar production 
 partial_data = pd.DataFrame(full_data.loc[full_data.TIMESTAMP > pd.to_datetime('2012-12-31'),['SOLAR TOTAL','SOLAR PV','SOLAR THERMAL','Hour']])
@@ -175,11 +167,11 @@ for i in partial_data.columns[:-1]: #don't want to plot hour against hour, all b
 plt.show()
 ```
 
-Returns these three charts:
+which returns these three charts:
 
 ![](Charts/SOLARPV_DAY.png) ![](Charts/SOLARTHERM_DAY.png) ![](Charts/SOLARTOTAL_DAY.png)
 
-Well, I suppose these charts are far from a surprize, solar power seems to generally reflect the time of day.  Perhaps a more interesting topic these charts shed light on would be determining the cause of the large interquartile range shown on the boxplot charts.  Lets take another couple looks at the data to see if we an extract any more valuable information.
+Unsurprisingly, solar power generally reflect the time of the day/solar irradiation. Perhaps a more interesting topic would be determining the cause of the large interquartile range shown on the boxplot charts. Let's take another look at the data to see if we can extract any more valuable information:
 
 ```python
 ## Lets take a look at the total solar production per year in the entire data set 
@@ -214,12 +206,12 @@ for year in range(2011,2019):
     plt.savefig('Charts/{}_solar_production_seasons.png'.format(year))
     plt.show()
 ```
-Returns a few charts like these, please note the scale of the Y axis and the year title across the top:
+which returns several charts like these, where one should note the scale of the Y-axis and the year title across the top:
 
 ![](Charts/2013_solar_production_seasons.png)
 ![](Charts/2017_solar_production_seasons.png)
 
-These charts really seem to show some valuable information! Each dot is one hour of production, color coded to the section of the day it falls into.  Since we expected some daily seasonality, this chart allows us to see a bit more of a big picture of what's happening throughout the year, as well as the year to year comparison of the overarching growth trend in solar production in California. Some interesting observations (among many!) include the vast growth in hourly production values from 2013 to 2017, the largest MWh production hour in 2013 was just barely a 3000 MWh, while in 2017 the peak production hour was nearly a 10000 MWh, and the increased "Morning" and "Evening" production may indicate an increase in solar panel effeciency over the years in this data set.
+Each dot is one hour of production, color coded to the section of the day it falls into. An interesting observation includes the vast growth in hourly production from 2013 to 2017. The largest production hour in 2013 was 3,000 MWh, while in 2017 the peak production hour was nearly 10,000 MWh. The increased "Morning" and "Evening" production may indicate an increase in solar panel efficiency over the years in this data set.
  
 Two final plots to help us understand the way the trends may be decomposed when building forecasts with Prophet:
 
@@ -281,11 +273,8 @@ plt.show()
 ![](Charts/solar_heatmap.png)
 
 
-
-## Model Building and Validation 
-Now that we've spent some time getting used to the time series data and building some expectations related to the existing trends in the data, we're ready to start building a model and building some forecasts.
-To keep it neat, and just a bit more organized, we'll start a new jupyter notebook for the purpose of building the model:
-### Import Dependencies 
+## Model building
+First, we import dependencies,  load the data, and perform the conversions outlined above:
 ```python
 # import dependencies
 import pandas as pd 
@@ -303,16 +292,12 @@ full_data['SOLAR'] = full_data['SOLAR'].fillna(0)
 full_data['SOLAR PV'] = full_data['SOLAR PV'].fillna(0)
 full_data['SOLAR THERMAL'] = full_data['SOLAR THERMAL'].fillna(0)
 
-
 # Create a combined columm now that there are no nulls
 full_data['SOLAR TOTAL'] = full_data['SOLAR']+full_data['SOLAR PV']+full_data['SOLAR THERMAL']
-
-
 
 # Convert timestamp column to pandas datetime data type
 full_data['TIMESTAMP'] = pd.to_datetime(full_data['TIMESTAMP'])
 full_data['TIMESTAMP'] = pd.to_datetime(full_data['TIMESTAMP'])
-
 
 # Allows us to acces the "dt" property of column and included methods
 full_data['MONTH'] = full_data['TIMESTAMP'].dt.month
@@ -320,10 +305,8 @@ full_data['YEAR'] = full_data['TIMESTAMP'].dt.year
 full_data['DAY'] = full_data['TIMESTAMP'].dt.day
 full_data['HOUR'] = full_data['TIMESTAMP'].dt.hour
 ```
-Above, we were simply repeating the base data cleaning and data type transformation we did earlier in the analysis section, however we have the all important FBProphet imported along with other dependencies now.  
 
-### Build Proper Data Frame
-Facebook prophet expects a specific input dataframe, one with a ```ds``` column and a ```y``` column.  As we'll see shortly, there can be quite a few more additional columns added to this dataframe, but for a baseline model, Prophet is just expecting the two columns we define.  For simplicity of testing the accuracy of the model, we will cut off the last year of data in order to see how well the model generalizes onto unknown data.
+Facebook Prophet expects a specific input dataframe, with a ```ds``` column and a ```y``` column. There can be more additional columns added to this dataframe, but for a baseline model, Prophet is just expecting the two columns we define.  For simplicity of testing the accuracy of the model, we will cut off the last year of data in order to see how well the model generalizes onto unknown data:
 ```python
 # create the dataframe for fb prophet, it expects specific input dataframe
 model_data = pd.DataFrame(full_data.loc[full_data.TIMESTAMP.dt.year > 2013,['TIMESTAMP', 'SOLAR TOTAL']])
@@ -338,18 +321,17 @@ test = model_data.loc[model_data.ds.dt.year >= 2017, :]
 ```
 ![](Charts/table_2.png)
 
-### Initialize and fit a Prophet Model
-Facebook Prophet follows the SkLearn API structure, where we initialize a model and call a ```fit``` method with the training data as the data parameter.  
+Facebook Prophet follows the SkLearn API structure, where we initialize a model and call a ```fit``` method with the training data as the data parameter:  
 ```python
 # fit a default parameter model to the data
 model = Prophet()
 model.fit(train)
 ```
-Will return a single printed line referencing the Prophet model object that was created and fit to the provided training data set:
+This returns a single printed line referencing the Prophet model object that was created and fit to the provided training data set:
 ```<fbprophet.forecaster.Prophet at 0x7ff06ee4f940>```
 
-### Create Future dataframe and Plot Results
-In order to make predictions on a given time period, Prophet includes a ```make_future_dataframe``` method on the ```Prophet()``` class.  This dataframe includes the entire training data set time period, as well as a "future" time period defined by the ```periods``` and ```freq``` parameters.  Here, the future data frrame will include all data from 2014 through 2016 (training data set), and the "future" will be ```365*24``` data points at a ```1H``` (one hour) frequency to make a forecasted year of hourly predictions to test against our test year of data.
+## Create future dataframe and plot results
+To make predictions on a given time period, Prophet includes a ```make_future_dataframe``` method on the ```Prophet()``` class.  This dataframe includes the entire training data set time period, as well as a "future" time period defined by the ```periods``` and ```freq``` parameters.  Here, the future data frame will include all data from 2014 through 2016 (training data set), and the "future" will be ```365*24``` data points at a ```1H``` (one hour) frequency to make a forecasted year of hourly predictions to test against our test year of data:
 
 ```python
 future = model.make_future_dataframe(periods=365*24, freq='1H')
@@ -357,13 +339,13 @@ forecast = model.predict(future)
 model.plot(forecast)
 plt.show()
 ```
-Returns:
+which returns:
 
 ![](Charts/firstModel.png)
 
-Here, since there are so many points connected by blue lines, the prediction pretty much covers up the entire training data, but the black dots showing through are the true values, the darker blue swath is the predicted values, and the light blue sections are the range of the confidence intervals for the fitted values.  
+The black dots are the true values, the darker blue swath represents the predicted values, and the light blue sections are the range of the confidence intervals for the fitted values.  
 
-While this chart is certainly helpful and valuable, sometimes I like to plot the test and training data sets, and then plot the predicitons across the top to see how the model is generally doing at generalizing a trend.
+While this chart is certainly helpful and valuable, it can be more instructive to plot the test and training data sets, and then plot the predicitons across the top to see how the model is generally performing at generalizing a trend:
 
 ```python
 # look at it in a differnt way 
@@ -386,13 +368,16 @@ plt.show()
 Returns:
 ![](Charts/firstPredictions.png)
 
-### Tune the Model
+## Tuning the Model
 
-For just throwing a data set into a default model, I'd say those predictions are pretty impressive!  There is clearly quite a bit of room to improve the accuracy, particularly in our test year, but lets start with redefining a training data frame.  Here we define a function that returns a boolean based off the time series data column.  The goal of this boolean column will be to indicate when an "on" and "off" daily seasonality should be applied.  In the analysis section, it was pretty obvious that the longer days between the Spring and Fall equinox's are going to have a significantly different daily solar production trend than the shorter and less solar intensive winter months.  Further, in the longer days, the sun's rays are intersecting the earths atmosphere at a more perpendicular angle, and therefore are traveling through less atmosphere before reaching the surface, so the rays hitting the solar pannels will be of slighly higher energy.  
-We also add a ```cap``` column to the data frame in order to apply a logistic growth model to the overall trend in the data, a cap column is required by Prophet for logistic growth.
+There is clearly room to improve the prediction accuracy, but let's first start with redefining a training data frame. Here we define a function that returns a boolean based on the time series data column. The goal of this boolean column will be to indicate when an "on" and "off" seasonality should be applied. 
+
+In the analysis section, it was apparent that the longer days between the Spring and Fall equinox's have a significantly different daily solar production trend than the shorter and less solar intensive winter months. During the longer days, the sun's rays are intersecting the earths atmosphere at a more perpendicular angle, which increases solar irradiation and hence production.
+
+We also add a ```cap``` column to the data frame in order to apply a logistic growth model to the overall trend in the data. A cap column is required by Prophet for logistic growth.
 
 ```python
-# now lets tune some stuff!
+# tune the model
 def on_season(ds):
     date = pd.to_datetime(ds)
     return ((date.month >= 3) & (date.month <= 9))
@@ -413,7 +398,7 @@ display(model_data.head())
 train = model_data.loc[model_data.ds.dt.year < 2017,:]
 test = model_data.loc[model_data.ds.dt.year >= 2017, :]
 ```
-Returns:
+which returns:
 
 ![](Charts/secondDataFrame.png)
 
@@ -609,3 +594,4 @@ Some next steps, if we wanted to continue to improve the model could include the
 Thanks for sticking through this relatively long blog! There was a fair amount to cover, and I hope this blog can help make approaching time series analysis easier and more fun! Please feel free to contact us if there are other data analyst or science projects you'd like us to write a blog on.  
 
 
+**It should be noted that the full jupyter notebooks for both analysis and forecasting can be found [here](), however most important code will be displayed in this blog.**
