@@ -402,15 +402,15 @@ which returns:
 
 ![](Charts/secondDataFrame.png)
 
-Now that we've spiced up our training data a bit, lets add some parameters to the default model to hopefully help tune in the predictions.  Here we initialize a model, but add in qute a few specific parameters to help the model extract more valuable information from the provided training data set.  There is great information in the FB Prophet documentaion on how each parameter can be tuned to help a model fit a data set better, but here is some brief informaiton on the parameters we're tuning for this model:
-1. ```changepoint_range``` : How far into the data set does facebook prophet stop inferring changepoints.  Default is .8, just pointed it out because it can have some interesting effects on the forecast generalized into the future.  Large outliers right near the end of a data set can sometimes throw off the generalized forecasted trend.
-1. ```weekly_seasonality & daily_seasonality``` : of the three seasons that Prophet automatically detects and fits linear models to, the weekly seasonality is the most "human" seasonality.  Since we're modeling nature rather than people, it seems leaving it out helps improve the fit of the model.  Daily seasonality is turned off due to the on and off seasons that we're introducing to the model.  
-1. ```yearly_seasonality``` : the number provided to default seasonality arguments in the initialization of the model is defining the number of Fourier terms that are summed to estimate the seasonality.  Prophet links this page too, but [this image on Wikipedia](https://en.wikipedia.org/wiki/Fourier_series#/media/File:Fourier_Series.svg) gives a good visualization of how a partial Fourier Sum can aproximate an arbitrary periodic signal.  A simple way to think of it is that an increased Fourier Order will allow a given seasonality to fit higher-frequency changes in the given seasonality.  
-1. ```growth``` : Chages the growth solver from the default linear solver to the logistic growth trend model, and allows for a specific carrying capacity.  Determining the proper "cap" for the saturating growth takes a bit of domain knowledge, but can provide more "real world" constraints to the model.
-1. ```changepoint_prior_scale``` : Determines how flexible the model is to the overall changepoints fit across the entire data set.  Prophet has some complex built in logic for determining and using the inferred change points (places where the overall trend can change it's slope), and this is an easy interface to change the change point behavior.  Default value is .05, increasing it will make the trend MORE flexible, and decreasing it will make the trend LESS flexible.  In other words, increasing will allow for more changepoints to be detected and used (more overall slope changes), and decreasing it will decrease the number of changes in slope in the overall trend.  We decreased this value in order to hopefully stop the model from trailing off in the "future" year and hopefully keep a more constant growth trend across the data set.  
+With that change applied, let's add some parameters to the default model to tune in the predictions. The tuning changes, along with some explanations, are as follows:
+1. ```changepoint_range``` : How far into the data set does Facebook Prophet stop inferring changepoints.  The default is .8, and this parameter can have some interesting effects on the forecast generalized into the future.  Large outliers right near the end of a data set can sometimes throw off the generalized forecasted trend.
+1. ```weekly_seasonality & daily_seasonality``` : of the three seasons that Prophet automatically detects and fits linear models to, the weekly seasonality is the most "human" seasonality.  Since we're modeling nature rather than people, it seems leaving it out helps improve the fit of the model.  Daily seasonality is turned off due to the on and off seasons that we have introduced above.  
+1. ```yearly_seasonality``` : the number provided to default seasonality arguments in the initialization of the model is defining the number of Fourier terms that are summed to estimate the seasonality. [This image](https://en.wikipedia.org/wiki/Fourier_series#/media/File:Fourier_Series.svg) gives a good visualization of how a partial Fourier Sum can approximate an arbitrary periodic signal. A simple way to think of it is that an increased Fourier Order will allow a given seasonality to fit higher-frequency changes in the given seasonality.  
+1. ```growth``` : Changes the growth solver from the default linear solver to the logistic growth trend model, and allows for a specific carrying capacity.  Determining the proper "cap" for the saturating growth takes a bit of domain knowledge, but can provide more "real world" constraints to the model.
+1. ```changepoint_prior_scale``` : Determines how flexible the model is to the overall changepoints fit across the entire data set. Prophet has some complex built in logic for determining and using the inferred change points (places where the overall trend can change it's slope), and this is an easy interface to change the change point behavior.  Default value is .05, increasing it will make the trend MORE flexible, and decreasing it will make the trend LESS flexible. In other words, increasing will allow for more changepoints to be detected and used (more overall slope changes), and decreasing it will decrease the number of changes in slope in the overall trend.  We decreased this value in order to hopefully stop the model from trailing off in the "future" year and hopefully keep a more constant growth trend across the data set.  
 1. ```seasonality_prior_scale``` : If seasonality is over or under fitting the data, you can adjust the seasonality prior scale to effectively dampen or increase each seasons effect.  This parameter can be set for all of the seasons in the initialization of the model, and can also be set for individual added seasonalities.  
 
-We also define our on and off season daily seasonality, this effect will become more obvious in a few following charts.  When defining a seasonality, you need a boolean column in the provided training data column in order to tell the model when that seasonality is in effect.  
+We also define our on and off season daily seasonality. When defining a seasonality, you need a boolean column in the provided training data column in order to tell the model when that seasonality is in effect.  
 
 ```python
 model = Prophet(changepoint_range=.8,weekly_seasonality=False,daily_seasonality=False,yearly_seasonality=150,
@@ -422,7 +422,7 @@ model.add_seasonality(name='off_season_daily', period=1, condition_name='off_sea
 model.fit(train)
 ```
 
-Make a future dataframe like above, but now we need to apply the same function to create the on and off seasons.  Since the seasonality is determined by the given month, it's easy to apply the same seasonality to the "future" data.  
+Create a future dataframe like above, but now we need to apply the same function to create the on and off seasons. Since the seasonality is determined by the given month, it's easy to apply the same seasonality to the "future" data.  
 
 ```python
 future = model.make_future_dataframe(periods=365*24, freq='H')
@@ -447,16 +447,16 @@ plt.show()
 
 ![](Charts/secondModel.png)
 
-Lets look at the way the trends were decomposed by the model.
+Let's look at the way the trends were decomposed by the model:
 
 ```python
 model.plot_components(forecast)
 ```
-Returns:
+which returns:
 
 ![](Charts/model_components.png)
 
-Recreate previous chart to see how the predictions have changed:
+We can now recreate the previous chart to see how the predictions have changed:
 
 ```python
 train.y = train.y**3
@@ -481,11 +481,11 @@ plt.savefig("Charts/second_prediction.png", bbox_inches='tight')
 plt.show()
 ```
 
-Returns:
+which returns:
 
 ![](Charts/second_prediction.png)
 
-Seems like the model is fitting the solar production data pretty well now! But of course, lets not leave it to visuals to tell us how well the model is generalizing.  
+It seems like the model is fitting the solar production data pretty well now! To quantify the model fit:
 
 ```python
 #lets get some accuracy statistics
@@ -514,7 +514,7 @@ print("Test R2 Score: ", r2_score(testDf.y, testDf.yhat))
 print("Test MAE: ", mean_absolute_error(testDf.y, testDf.yhat))
 ```
 
-Output:
+which gives:
 
 ```
 Train R2 Score:  0.9047912458780245
@@ -523,9 +523,9 @@ Test R2 Score:  0.9231201173047913
 Test MAE:  552.3698339274179
 ```
 
-For a quick run through and only making one iterative improvement on how the model is fitting, those are pretty satisfactory results!  The model is able to explain around 90% of the variance observed in the training and testing data set, and with the scale of the data (up to 10000 for single point) the mean absolute error of 400-600 isn't too horrible.  Interestingly, the testing data set has a slightly greater R2 score with a larger mean absolute error, and this is likely due to a small increase in missing data points in 2017 that needed to be filled with 0's in order to be able to calculate statistics across the test data without any nulls.  There are better ways to do so, particularly for data with such an strong repeating trend, which include pandas ```ffil``` and other na handling functions.  
+The model is now able to explain around 90% of the variance observed in the training and testing data set, and with the scale of the data (up to 10,000 for single point) the mean absolute error of 400-600 is acceptable. Interestingly, the testing data set has a slightly greater R2 score with a larger mean absolute error, and this is likely due to a small increase in missing data points in 2017 that needed to be filled with 0's in order to be able to calculate statistics across the test data without any nulls. There are better ways to do so, particularly for data with such an strong repeating trend, which include pandas ```ffil``` and other na handling functions.  
 
-Lets visualize the true and forecasted results in one last chart, these charts are helpful to see how the distribution of the two arrays relate, and can give some cool insights into unexpected effects from data transformatons done on the training data provided to the modeling algorithm.  
+Let's visualize the true and forecasted results in one last chart, and give some additional insights into unexpected effects from data transformations done on the training data provided to the modeling algorithm:  
 
 ```python 
 import seaborn as sns
@@ -536,7 +536,7 @@ plt.show()
 ```
 ![](Charts/r2Plot.png)
 
-Do it again without the 0's, just to dial in the R2 value and make the histograms a bit more information dense:
+Let's repeat this without the 0's, to dial in the R2 value and make the histograms a little more information dense:
 
 ```python
 testDf = testDf.loc[testDf.y != 0]
@@ -548,7 +548,7 @@ plt.show()
 
 ![](Charts/r2Plot_no_0.png)
 
-Finally, lets just look at the test year of 2017, and group the data a bit to make it easier to get the big picture of how well this model does or doesn't work.  Here we will also print a few summary values to see how the model does at an aggregate level.
+Finally, let's look at the test year of 2017, and group the data to make it easier to get the big picture of how well this model works. Here we will also print a few summary values to see how the model performs at an aggregate level.
 
 ```python
 # lets group the data a bit to get a better feel for the accuracy of this version
