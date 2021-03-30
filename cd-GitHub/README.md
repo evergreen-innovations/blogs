@@ -157,9 +157,9 @@ Your GitHub workflow is all setup now to access and deploy applications using Co
 
 ## Actions 
 
-The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. We use two workflows in this example, tests.yml, release.yml and deploy.yml. 
+The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. 
 
-The ```tests.yml``` workflow runs unit tests on the go code. This workflow is triggered when code is pushed on the ```dev``` branch with the tag ```test-*```.
+The ```testing.yml``` workflow runs unit tests on the go code. This workflow is triggered when code is pushed on the ```dev``` branch with the tag ```test-*```.
 
 Job in the workflow include the following steps:
 

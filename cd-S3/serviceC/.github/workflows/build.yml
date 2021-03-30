@@ -1,0 +1,89 @@
+# This GitHub Actions workflow starts on a manual trigger from main(default) branch
+name: Build&Release
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Version tag'     
+        required: true
+      releaseBody:
+        description: 'Release changes'     
+        required: true
+      branchName:
+        description: 'Branch name'     
+        required: true
+        default: develop
+      buildZipName:
+        description: 'Build zip file name'     
+        required: true
+        default: servicec.zip
+      s3Bucket:
+        description: 'S3 bucket name'     
+        required: true
+        default: gobuilds 
+   
+jobs:
+  release:
+    name: Release on GitHub
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          ref: ${{ github.event.inputs.branchName }}
+    
+      - name: Validates GO releaser config
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: check
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions
+        with:
+          tag_name: ${{ github.event.inputs.releaseVersion }}
+          release_name: Release ${{ github.event.inputs.releaseVersion }}
+          body: |
+            ${{ github.event.inputs.releaseBody }}
+          draft: false
+          prerelease: false
+
+  build:
+    name: Build and upload on s3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          ref: ${{ github.event.inputs.branchName }}
+      
+      - name: Get dependencies
+        run: |
+            go get -v -t -d ./...
+            if [ -f Gopkg.toml ]; then
+                curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+                dep ensure
+            fi
+
+      - name: Set up Go 1.15
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15.x
+        id: go
+
+      - name: Create local changes
+        run: |
+          make build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: us-east-2
+
+      - name: Upload to S3
+        run: |
+              aws s3 cp ${{ github.event.inputs.buildZipName }} s3://${{ github.event.inputs.s3Bucket }}/

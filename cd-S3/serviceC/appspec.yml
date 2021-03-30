@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/servicec
+hooks:
+  BeforeInstall:
+    - location: scripts/BeforeInstall.sh
+  AfterInstall:
+    - location: scripts/AfterInstall.sh
+  ApplicationStop:
+    - location: scripts/ApplicationStop.sh
+  ApplicationStart:
+    - location: scripts/ApplicationStart.sh
+  ValidateService:
+    - location: scripts/ValidateService.sh      
