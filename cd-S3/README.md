@@ -126,8 +126,8 @@ In this example, the executables are placed in the ```/opt``` directory of the E
 
 ```shell
 files:
-  - source: /app1
-    destination: /opt
+  - source: /
+    destination: /opt/servicec
 ```
 Your GitHub workflow is all setup now to access and deploy applications using CodeDeploy. Repeat the steps for the other two services.
 
