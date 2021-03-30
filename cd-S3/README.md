@@ -148,7 +148,7 @@ Job in the workflow include the following steps:
   on:
     push:
       tags:
-          - 'test-*' # Push events to matching v*, i.e. v1.0, v20.15.10
+          - 'test-*'
   jobs:
     test:
       strategy:
