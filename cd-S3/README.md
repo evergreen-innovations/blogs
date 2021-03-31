@@ -20,7 +20,7 @@ Another component in a workflow is a ```runner```. A ```runner``` is a virtual m
 
 
 ## Mock microservices
-We will use GitHub Actions to deploy three microservices to an [EC2](https://aws.amazon.com/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc) instance. We have three mock microservices written in Go - serviceA, serverB and serverC. These three microservices communicate using HTTP REST API. In this example:
+We will use GitHub Actions to deploy three microservices to an [EC2](https://aws.amazon.com/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc) instance. We have three mock microservices written in Go - serviceA, serviceB and serviceC. These three microservices communicate using HTTP REST API. In this example:
 
 * ServiceA sends a random value between 0-10 to ```http://localhost:9000/post```
 
@@ -32,13 +32,16 @@ We will use GitHub Actions to deploy three microservices to an [EC2](https://aws
 
 This code can be found at the EGI Github repository [here](https://github.com/evergreen-innovations/blogs/tree/master/cd-S3). 
 
+
 ## AWS Configuration
 
-In AWS, we need to set up three services. The steps can be automated using CloudFormation templates but this blog will explain the steps using the AWS console.
+First we set up AWS resources. We need to set up three services. 
 
 1. EC2 -  to deploy the code.
 1. CodeDeploy - deployment service that facilitates easy deployment on AWS instances.
 1. IAM Role - manage CodeDeploy permissions to access the EC2 server
+
+The steps can be automated using [CloudFormation](https://aws.amazon.com/cloudformation/) templates but this blog will explain the steps using the AWS console.
 
 ### EC2
 
@@ -107,11 +110,21 @@ The tag used is specified by us in the EC2 section.
 
 ### S3
 
-* Create a AWS S3 bucket
+* Create a AWS S3 bucket. 
 
 ## GitHub
 
-Copy the services A,B and C in this repository as three repositories.
+Copy the services A,B and C in this repository as three seperate repositories in your GitHub account.
+
+```
+git clone git@github.com:evergreen-innovations/blogs.git
+cp -r serviceA <path to new git directory>
+git add .
+git commit -m "first commit"
+git branch -M main
+git push origin -u main
+```
+Repeat for other two services.
 
 * Add the AWS user credentials with permissions to access CodeDeploy to Github Secrets. To add secrets, click on the repository, ```Settings``` tab -> ```Secrets```.
     
@@ -131,7 +144,7 @@ files:
 ```
 Your GitHub workflow is all setup now to access and deploy applications using CodeDeploy. Repeat the steps for the other two services.
 
-## Actions 
+## GitHub Actions 
 
 The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. We use three workflows in this example, ```testing.yml```, ```release.yml``` and ```deploy.yml```. 
 
