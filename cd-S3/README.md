@@ -24,7 +24,7 @@ We will use GitHub Actions to deploy three microservices to an [EC2](https://aws
 
 * ServiceA sends a random value between 0-10 to ```http://localhost:9000/post```
 
-* ServiceB hosts the POST endpoint at - ```http://localhost:9000/post```. Our example serverB, on receiving a value from serviceA, adds a 100 and sends to it serviceC.
+* ServiceB hosts the POST endpoint at - ```http://localhost:9000/post```. Our example serviceB, on receiving a value from serviceA, adds a 100 and sends to it serviceC.
 
 * ServiceC has two endpoints.
   * GET endpoint ```http://localhost:15000/get``` to display all the values sent.
@@ -32,16 +32,13 @@ We will use GitHub Actions to deploy three microservices to an [EC2](https://aws
 
 This code can be found at the EGI Github repository [here](https://github.com/evergreen-innovations/blogs/tree/master/cd-S3). 
 
-
 ## AWS Configuration
 
-First we set up AWS resources. We need to set up three services. 
+In AWS, we need to set up three services. The steps can be automated using CloudFormation templates but this blog will explain the steps using the AWS console.
 
 1. EC2 -  to deploy the code.
 1. CodeDeploy - deployment service that facilitates easy deployment on AWS instances.
 1. IAM Role - manage CodeDeploy permissions to access the EC2 server
-
-The steps can be automated using [CloudFormation](https://aws.amazon.com/cloudformation/) templates but this blog will explain the steps using the AWS console.
 
 ### EC2
 
@@ -110,21 +107,11 @@ The tag used is specified by us in the EC2 section.
 
 ### S3
 
-* Create a AWS S3 bucket. 
+* Create a AWS S3 bucket
 
 ## GitHub
 
-Copy the services A,B and C in this repository as three seperate repositories in your GitHub account.
-
-```
-git clone git@github.com:evergreen-innovations/blogs.git
-cp -r serviceA <path to new git directory>
-git add .
-git commit -m "first commit"
-git branch -M main
-git push origin -u main
-```
-Repeat for other two services.
+Copy the services A,B and C in this repository as three separate repositories in your GitHub account.
 
 * Add the AWS user credentials with permissions to access CodeDeploy to Github Secrets. To add secrets, click on the repository, ```Settings``` tab -> ```Secrets```.
     
@@ -144,7 +131,7 @@ files:
 ```
 Your GitHub workflow is all setup now to access and deploy applications using CodeDeploy. Repeat the steps for the other two services.
 
-## GitHub Actions 
+## Actions 
 
 The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. We use three workflows in this example, ```testing.yml```, ```release.yml``` and ```deploy.yml```. 
 
@@ -183,37 +170,12 @@ Job in the workflow include the following steps:
           ## Change directory as applicable
           run: go test -v -covermode=count
   ```
-
-The ```release.yml``` workflow creates a code release on GitHub. It also create a executable of the code in the repository, and uploads the files needed on to the S3 bucket.
-
-This workflow is triggered manually with user inputs.
-
-```yaml
-# Name of the workflow/action
-name: Build&Release
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Version tag'     
-        required: true
-      releaseBody:
-        description: 'Release changes'     
-        required: true
-      branchName:
-        description: 'Branch name'     
-        required: true
-        default: develop
-      buildZipName:
-        description: 'Build zip file name'     
-        required: true
-        default: <replace with filename makefile>.zip
-      # Name of the s3 bucket created in AWS
-      s3Bucket:
-        description: 'S3 bucket name'     
-        required: true
-        default: <replace with default bucket name>
+To run the workflow:
 ```
+git tag test-0.0.1
+git push origin test-0.0.1
+```
+The ```release.yml``` workflow creates a code release on GitHub. It also create a executable of the code in the repository, and uploads the files needed on to the S3 bucket.
 
 The release job in the workflow include the following steps:
 
@@ -250,8 +212,38 @@ The release job in the workflow include the following steps:
           draft: false
           prerelease: false
 ```
+This workflow is triggered manually with user inputs.
 
-The build job in the workflow include the following steps:
+```yaml
+# Name of the workflow/action
+name: Build&Release
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Version tag'     
+        required: true
+      releaseBody:
+        description: 'Release changes'     
+        required: true
+      branchName:
+        description: 'Branch name'     
+        required: true
+        default: develop
+      buildZipName:
+        description: 'Build zip file name'     
+        required: true
+        default: <replace with filename makefile>.zip
+      # Name of the s3 bucket created in AWS
+      s3Bucket:
+        description: 'S3 bucket name'     
+        required: true
+        default: <replace with default bucket name>
+```
+To run:
+Click on Actions -> Build&Release -> Run workflow. Enter the required inputs or accept defaults.
+
+The ```build``` job in the workflow include the following steps:
 
 1. Checkout the code from the main branch (same as before)
 2. Get dependencies
@@ -298,18 +290,8 @@ The build job in the workflow include the following steps:
         run: |
               aws s3 cp ${{ github.event.inputs.buildZipName }} s3://${{ github.event.inputs.s3Bucket }}/
 ```
-## Workflow in action 
-
-To test the above, we trigger the dev branch manually. Click on the Actions tab to check the jobs running and the workflow status. 
-
-![Actions](images/actions-1.png)
-
-Let's take a look at ```DeployOnAWS``` workflow. It has one job called ```Deploy```, and steps for each job are on the right.
-![Actions](images/actions-2.png)
-
-One can look at the output of each step. For instance, let's look at the output for ```Test``` workflow below,
-![Actions](images/actions-3.png)
-
+To run:
+Click on Actions -> Build&Release -> Run workflow. Enter the required inputs or accept defaults.
 
 ## Test the Mock Services
 
@@ -317,25 +299,9 @@ The mock services are now ready to be tested.
 
 * SSH into the EC2 server (see [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html).)
 
-* Navigate to the ```/opt``` folder. Your executables should be located here.
+* Navigate to the ```/opt``` folder. Your serviceA, serviceB and serviceC folders should be located here.
 
-![EC2](images/ec2-opt.png)
-
-A summary of the executable for the mock services:
-
-```
-app1 (serverC) 
-app2 (serverB)
-app3 (serviceA)
-```
-
-* Run app3. 
-
-```shell
-./app3
-```
-
-* Navigate to a HTTP client, such as Postman. Perform a ```/get``` on serverC. 
+* Navigate to a HTTP client, such as Postman. Perform a ```/get``` on serviceC. 
 
 ![EC2](images/postman.png)
 
