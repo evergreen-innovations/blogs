@@ -38,7 +38,8 @@ In AWS, we need to set up three services. The steps can be automated using Cloud
 
 1. EC2 -  to deploy the code.
 1. CodeDeploy - deployment service that facilitates easy deployment on AWS instances.
-1. IAM Role - manage CodeDeploy permissions to access the EC2 server
+1. IAM Role - authorize CodeDeploy to access the EC2 server
+2. IAM User - create an IAM user with permissions to access to CodeDeploy. Save the access key file for later use. Contact AWS admin for pre-existing keys.
 
 ### EC2
 
@@ -50,7 +51,7 @@ You can read about how to do that [here](https://docs.aws.amazon.com/quickstarts
 
 While configuring security groups, allow port 22 and 15000 access from at least your IP address.
 
-* Now select your instance, click on the ```Tags``` tab. Click on ```Manage tags```. Assign it a meaningful tag. CodeDeploy uses this tag to find the instance.
+* Now select your instance, click on the ```Tags``` tab. Click on ```Manage tags```. Assign it a meaningful tag. CodeDeploy uses this tag to find the instance. 
 
 ![Tag EC2](images/ec2-tag.png)
 
@@ -75,11 +76,32 @@ The next step is to create an IAM role. We will need a role, which is assigned t
 
 **Note:** See [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html) for additional info. To find out more about roles, why and how they are used, see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
 
-### CodeDeploy Settings
+## CodeDeploy
 AWS CodeDeploy automates your software deployments, allowing for reliable and rapid deployment. CodeDeploy can be used to deploy the application to Amazon EC2, AWS Fargate, AWS Lambda, or your on-premises servers. 
 
 There is no additional charge for using CodeDeploy to deploy on AWS services - EC2, Lambda, Fargate. There is an additional charge when CodeDeploy is used to deploy the application on an on-premise server.
 
+### How CodeDeploy works
+
+CodeDeploy deploys an application in stages. One would need to create a shell script to run at each stage. The ```appspec.yml``` file is used to specify the location of the scripts. This file should always be on deployment root directory. Learn more about the appspec.yml file [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file.html).
+
+```appspec.yml``` is also used to inform CodeDeploy of the deployment directory on EC2 instance. We will deploy the code under ```/opt``` directory of the EC2 instance. This is done using the ```source``` and ```destination``` options of ```appspec.yml```, as shown below:
+
+```shell
+files:
+  - source: /
+    destination: /opt/servicec
+```
+
+For our mock services these scripts are placed under the ```scripts/ ``` folder. An example is ```ApplicationStart.sh``` which has the following information:
+
+```shell
+#!/bin/bash
+/opt/servicec > /dev/null 2> /dev/null < /dev/null &
+```
+The ```ApplicationStart.sh``` is run to perform application start as the name suggests.
+
+### Setup
 * Once you sign in to AWS, start by selecting CodeDeploy under ```Services```.
 
 ![AWS Services](images/services.png "AWS Services")
@@ -107,31 +129,25 @@ The tag used is specified by us in the EC2 section.
 
 ### S3
 
-* Create a AWS S3 bucket
+* Create a AWS S3 bucket. Take a note of the S3 bucket name, we will use this later.
 
 ## GitHub
 
-Copy the services A,B and C in this repository as three separate repositories in your GitHub account.
+Copy the services A,B and C in this repository as three separate repositories in your GitHub account. Instructions on creating a repository in GitHub can be found [here](https://docs.github.com/en/github/getting-started-with-github/create-a-repo).
+
+### GitHub Secrets - Authentication and authorization
 
 * Add the AWS user credentials with permissions to access CodeDeploy to Github Secrets. To add secrets, click on the repository, ```Settings``` tab -> ```Secrets```.
     
 ![Github secrets](images/secrets.png)
 
-* CodeDeploy deploys the application in 7 different stages. At each stage you need to provide it with a script to run. For our mock services these sit under the ```scripts/ ``` folder. The ```appspec.yml``` file is needed to specify the location of the scripts. This file also mentions the source and the destination of the executable. For this example, ApplicationStart.sh has the following information:
-```shell
-#!/bin/bash
-/opt/servicec > /dev/null 2> /dev/null < /dev/null &
-```
-In this example, the executables are placed in the ```/opt``` directory of the EC2 instance.
+### Deployment scripts
 
-```shell
-files:
-  - source: /
-    destination: /opt/servicec
-```
+Copy the deployment scripts needed by CodeDeploy into ```scripts``` directory. Place the appspec.yml file into the repository base directory. Refer to [CodeDeploy](https://github.com/evergreen-innovations/blogs/tree/master/cd-S3#codedeploy) step for more information.
+
 Your GitHub workflow is all setup now to access and deploy applications using CodeDeploy. Repeat the steps for the other two services.
 
-## Actions 
+### Actions 
 
 The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. We use three workflows in this example, ```testing.yml```, ```release.yml``` and ```deploy.yml```. 
 
