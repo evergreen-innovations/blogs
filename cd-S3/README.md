@@ -39,7 +39,7 @@ In AWS, we need to set up three services. The steps can be automated using Cloud
 1. EC2 -  to deploy the code.
 1. CodeDeploy - deployment service that facilitates easy deployment on AWS instances.
 1. IAM Role - authorize CodeDeploy to access the EC2 server
-2. IAM User - create an IAM user with permissions to access to CodeDeploy. Save the access key file for later use. Contact AWS admin for pre-existing keys.
+2. IAM User - create an IAM user with permissions to access to CodeDeploy.
 
 ### EC2
 
@@ -75,6 +75,12 @@ The next step is to create an IAM role. We will need a role, which is assigned t
 ![IAM Role](images/role-assignpolicy.png)
 
 **Note:** See [here](https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html) for additional info. To find out more about roles, why and how they are used, see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
+
+### IAM User
+
+Creating an IAM User is similar to creating a IAM role. To know more about the difference, read [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id.html).
+
+The IAM user should have permissions to access CodeDeploy. Generate and save the access keys file for later use. Contact AWS admin for pre-existing keys.
 
 ## CodeDeploy
 AWS CodeDeploy automates your software deployments, allowing for reliable and rapid deployment. CodeDeploy can be used to deploy the application to Amazon EC2, AWS Fargate, AWS Lambda, or your on-premises servers. 
@@ -129,11 +135,34 @@ The tag used is specified by us in the EC2 section.
 
 ### S3
 
+There are two ways CodeDeploy can be used to deploy the code on an EC2 instance.
+
+1. From the Github repo.
+2. From an S3 bucket.
+
+The advantages of using a S3 bucket instead of a direct connect are two fold. First, deploying code from github requires a manual authentication step where the engineer needs to authorize AWS to connect to Github. This process would not scale well. Second, deploying code using github copies the entire code in the repository to the EC2 instance. The EC2 instance should ideally only have the executble and the files needed for CodeDeploy to run.
+
+Hence, we choose to deploy the code from an S3 bucket. It is required that the S3 bucket has the contents that to be deployed compressed and uploaded in the ```zip``` format.
+
 * Create a AWS S3 bucket. Take a note of the S3 bucket name, we will use this later.
 
-## GitHub
+## GitHub setup
 
-Copy the services A,B and C in this repository as three separate repositories in your GitHub account. Instructions on creating a repository in GitHub can be found [here](https://docs.github.com/en/github/getting-started-with-github/create-a-repo).
+In the example setup we work on the ```develop``` branch. 
+
+* Create a ```develop``` branch.
+
+```
+git checkout -b develop
+```
+
+* Set the ```develop``` branch as the default branch.
+
+![Github default branch](images/default-branch.png)
+
+* Copy the services A,B and C in this repository as three separate repositories in your GitHub account. Make sure that the code is in the default branch.
+
+Instructions on creating a repository in GitHub can be found [here](https://docs.github.com/en/github/getting-started-with-github/create-a-repo).
 
 ### GitHub Secrets - Authentication and authorization
 
@@ -143,15 +172,21 @@ Copy the services A,B and C in this repository as three separate repositories in
 
 ### Deployment scripts
 
-Copy the deployment scripts needed by CodeDeploy into ```scripts``` directory. Place the appspec.yml file into the repository base directory. Refer to [CodeDeploy](https://github.com/evergreen-innovations/blogs/tree/master/cd-S3#codedeploy) step for more information.
+Copy the deployment scripts needed by CodeDeploy into ```scripts``` directory. Place the appspec.yml file into the repository base directory. Refer to [CodeDeploy](#codedeploy) step for more information.
 
 Your GitHub workflow is all setup now to access and deploy applications using CodeDeploy. Repeat the steps for the other two services.
 
 ### Actions 
 
-The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. We use three workflows in this example, ```testing.yml```, ```release.yml``` and ```deploy.yml```. 
+Please read the [terminology](#github-terminology) section before.
 
-The ```tests.yml``` workflow runs unit tests on the go code. This workflow is triggered when code is pushed on the ```dev``` branch with the tag ```test-*```.
+The workflow ```.yml``` files should be placed under the ```.github/workflows``` folder in the code directory. In this example, we use three workflows ```testing.yml```, ```release.yml``` and ```deploy.yml```. 
+
+**Note:** The ```testing.yml``` is only present in ```serviceC``` and is used for demonstrating another way a workflow can be triggered.
+
+#### Tests
+
+The ```testing.yml``` workflow runs unit tests written for the go code. This workflow is triggered when code is pushed on the ```dev``` branch with the tag ```v-*```. A tag is used to mark a specific point in repository history as important. For example, when a code is being released into production or staging environment. Typically such releases are marked using version numbers in format ```v.<major version no.>.<minor version number>```.
 
 Job in the workflow include the following steps:
 
@@ -164,7 +199,7 @@ Job in the workflow include the following steps:
   on:
     push:
       tags:
-          - 'test-*'
+          - 'v-*' # Push events to matching v*, i.e. v1.0, v20.15.10
   jobs:
     test:
       strategy:
@@ -186,12 +221,54 @@ Job in the workflow include the following steps:
           ## Change directory as applicable
           run: go test -v -covermode=count
   ```
+
+Push the code to the ```develop``` branch. Confirm that all the workflows show up under the ```Actions``` tab on Github.
+
 To run the workflow:
 ```
-git tag test-0.0.1
-git push origin test-0.0.1
+git tag v-0.0.1
+git push origin v-0.0.1
 ```
-The ```release.yml``` workflow creates a code release on GitHub. It also create a executable of the code in the repository, and uploads the files needed on to the S3 bucket.
+
+#### Create release and build
+
+The ```build.yml``` workflow has two jobs called ```release``` and ```build```. 
+
+***Sidenote: As mentioned before, we only deploy the executable, along with config files needed by CodeDeploy as a zip file. The zip file is created and copied over to the S3 bucket in the build step. The steps to create an executable and the zip file are defined by the developer in a ```Makefile```. The ```Makefile``` is included with the code.***
+
+This workflow is triggered manually with user inputs. 
+
+```yaml
+# Name of the workflow/action
+name: Build&Release
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Version tag'         #release version
+        required: true
+      releaseBody:
+        description: 'Release changes'     #release description
+        required: true
+      branchName:
+        description: 'Branch name'         #code branch
+        required: true
+        default: develop
+      buildZipName:
+        description: 'Build zip file name'  #name given to zip file, specified in Makefile 
+        required: true
+        default: <replace with filename in makefile>.zip 
+      # Name of the s3 bucket created in AWS
+      s3Bucket:
+        description: 'S3 bucket name'      #S3 bucket to copy the zip file to, as noted before
+        required: true
+        default: <replace with default bucket name>
+```
+
+To run:
+Click on Actions -> Build&Release -> Run workflow. Enter the required inputs or accept defaults.
+
+The first part of ```build.yml``` workflow defined a ```release``` job. The release job creates a code release on GitHub. 
 
 The release job in the workflow include the following steps:
 
@@ -228,38 +305,8 @@ The release job in the workflow include the following steps:
           draft: false
           prerelease: false
 ```
-This workflow is triggered manually with user inputs.
 
-```yaml
-# Name of the workflow/action
-name: Build&Release
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Version tag'     
-        required: true
-      releaseBody:
-        description: 'Release changes'     
-        required: true
-      branchName:
-        description: 'Branch name'     
-        required: true
-        default: develop
-      buildZipName:
-        description: 'Build zip file name'     
-        required: true
-        default: <replace with filename makefile>.zip
-      # Name of the s3 bucket created in AWS
-      s3Bucket:
-        description: 'S3 bucket name'     
-        required: true
-        default: <replace with default bucket name>
-```
-To run:
-Click on Actions -> Build&Release -> Run workflow. Enter the required inputs or accept defaults.
-
-The ```build``` job in the workflow include the following steps:
+The second part of ```build.yml``` file defines the build job. The build job creates an executable of the go code in the repository, creates a zip file with the executable and the config scripts needed by CodeDeploy and uploads the zip file to the S3 bucket. The job includes the following steps:
 
 1. Checkout the code from the main branch (same as before)
 2. Get dependencies
