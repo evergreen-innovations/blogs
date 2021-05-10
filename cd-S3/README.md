@@ -51,7 +51,7 @@ You can read about how to do that [here](https://docs.aws.amazon.com/quickstarts
 
 While configuring security groups, allow port 22 and 15000 access from at least your IP address.
 
-* Now select your instance, click on the ```Tags``` tab. Click on ```Manage tags```. Assign it a meaningful tag. CodeDeploy uses this tag to find the instance. 
+* Now select your instance, click on the ```Tags``` tab. Click on ```Manage tags```. Assign it a meaningful tag. CodeDeploy uses this tag to find the instance. For example, enter tag ```key: deploy``` and ```value: yes```.
 
 ![Tag EC2](images/ec2-tag.png)
 
