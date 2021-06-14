@@ -1,0 +1,59 @@
+on:
+  workflow_dispatch:
+    inputs:
+      ImageID:
+        description: 'AWS Amazon Machine Image ID'
+        required: true
+        default: ami-073dcb61654de3519
+      VpcCIDRBlock:
+        description: 'CIDR Block for VPC Ex.10.0.0.0/16'
+        required: true
+        default: 10.0.0.0/16
+      SubnetCIDRBlock:
+        description: 'CIDR Block for subnet Ex.10.0.10.0/24'
+        required: true
+        default: 10.0.41.0/24
+      TemplatePath:
+        description: 'Stack template relative path'
+        required: true
+        default: demo.yml
+      StackName:
+        description: 'Stack name'
+        required: true
+        default: Demo
+      ExecuteChange:
+        description: 'Enter 0 to execute immediately else 1' 
+        required: true
+        default: 1
+
+name: Deploy or modify stack
+jobs:
+  deploy-stack:
+    name: Deploy or modify stack
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      id: creds
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: Validate cloudformation template
+      run: |
+        aws cloudformation validate-template --template-body file://${{ github.event.inputs.TemplatePath }}
+
+    - name: Deploy Demo template
+      id: demo-stack
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      if: "contains(github.event.inputs.TemplatePath, 'demo') && success()"
+      with:
+        name: ${{ github.event.inputs.StackName }}
+        template: ${{ github.event.inputs.TemplatePath }}
+        no-fail-on-empty-changeset: "1"
+        no-execute-changeset: ${{ github.event.inputs.ExecuteChange }} # Shows up in the Change sets tab in cloudformation
+        parameter-overrides: "ImageID=${{ github.event.inputs.ImageID }},VpcCIDRBlock=${{ github.event.inputs.VpcCIDRBlock }},SubnetCIDRBlock=${{ github.event.inputs.SubnetCIDRBlock }}"

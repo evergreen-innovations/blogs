@@ -1,0 +1,28 @@
+on:
+  workflow_dispatch:
+    inputs:
+      StackName:
+        description: 'Name of the stack to delete'
+        required: true
+        default: Demo
+name: Delete stack
+
+jobs:
+  deploy-ec2-server:
+    name: Deploy Amazon EC2 server
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      id: creds
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: Deploy EC2 service with CloudFormation
+      run: |
+        aws cloudformation delete-stack --stack-name ${{ github.event.inputs.StackName }}
