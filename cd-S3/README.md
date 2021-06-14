@@ -242,7 +242,7 @@ Push the code to the ```develop``` branch. Confirm that all the workflows show u
 To run the workflow:
 ```
 git tag v-0.0.1
-git push origin v-0.0.1
+git push --tags
 ```
 
 #### Create release and build
