@@ -207,12 +207,10 @@ The networking components VPC details, subnet as well as the security group will
 ![Demo](images/demovpc.png)  
 
 ### DeleteStack
-Use this workflow only if you are sure, that all the resources related to the stack can be deleted. To clean up the instance provisioned above, use the workflow to remove the resources created.
+Use the ```DeleteStack``` workflow only if you are sure, that all the resources related to the stack can be deleted. To clean up the instance provisioned above, ```Run the workflow``` to remove the resources created.
 
 ## Managing drifts
-Stack drift is when the template doesn't represent the state of AWS infrastructure. 
-
-Drifts can be resolved either by importing new resources or using an update action. 
+Stack drift is when the template doesn't represent the state of AWS infrastructure that actually exists. Drifts can be resolved either by importing new resources or using an update action. Managing drifts is beyond the scope of this blog but it is something to be aware of as one starts managing their infrastructure using CloudFormation or any other IaC service. 
 
 ## Conclusion
 This blog explained the steps involved in deploying AWS infrastructure - VPC, subnet and EC2 servers using CloudFormation and GitHub Actions. Please contact us if you have any questions about this blog or any other DevOps topics you want us write about.
