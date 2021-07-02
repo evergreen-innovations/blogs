@@ -70,7 +70,7 @@ Additionally, create a key pair in AWS. To create a key pair.
 
 ### CloudFormation template
 
-The template ```demo.yml``` creates a new VPC. The snippet from the YAML file defines the resource type. Each resource is given a set of properties. For the type ```AWS::EC2::VPC```, the required properties are ```CidrBlock``` which defines the IP CIDR range for the VPC in the AWS cloud environment. Additional properties can be defined to override the defaults as required. The complete set of documentation can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html).
+The template ```demo.yml``` creates a new VPC. The snippet from the YAML file shown below defines the resource type. Each resource is given a set of properties. For the type ```AWS::EC2::VPC```, the required properties are ```CidrBlock``` which defines the IP CIDR range for the VPC in the AWS cloud environment. Additional properties can be defined to override the defaults as required. The complete set of documentation can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html).
 
 ```yaml
   VPC:
@@ -85,7 +85,7 @@ The template ```demo.yml``` creates a new VPC. The snippet from the YAML file de
         - Key: Name
           Value: DemoVPC 
 ```
-Also, ```demo.yml``` creates a subnet within the VPC, 
+Also, ```demo.yml``` creates a subnet within the VPC: 
 ```yaml
   DemoSubnet:
     Type: AWS::EC2::Subnet
@@ -101,7 +101,7 @@ Also, ```demo.yml``` creates a subnet within the VPC,
         - Key: Name
           Value: DemoSubnet
 ```
-defines security group rules,
+defines security group rules:
 ```yaml
   DemoSG:
     Type: 'AWS::EC2::SecurityGroup'
@@ -118,7 +118,7 @@ defines security group rules,
         ToPort: -1       
         CidrIp: '0.0.0.0/0'
 ```
-and finally, provisions an EC2 machine with Ubuntu 18.04,
+and finally provisions an EC2 machine with Ubuntu 18.04:
 ```yaml
 DemoBastionInstance:
     Type: AWS::EC2::Instance
@@ -148,7 +148,7 @@ DemoBastionInstance:
           Value: DemoBastionInstance
 ```
 
-To run the workflow, make sure your provide the ```required``` properties for each resource.
+To run the workflow, make sure you provide the ```required``` properties for each resource.
 
 Finally, ```Parameters``` can be used to pass variable values to the template. 
 
