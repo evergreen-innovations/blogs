@@ -174,7 +174,7 @@ We have two workflows in the repository - DeployOrModify and DeleteStack.
 ### DeployOrModify
 This workflow can be used to deploy a new stack or modify an existing stack. 
 
-To deploy the template, Navigate to the ```Actions``` tab in GitHub, Select the workflow to run. Give the inputs required or use the defaults.
+To deploy the template, navigate to the ```Actions``` tab in GitHub and select the workflow to run. Give the inputs required or use the defaults.
 
 ![Run-Workflow](images/run-workflow.png)    
 
@@ -183,25 +183,25 @@ To deploy the template, Navigate to the ```Actions``` tab in GitHub, Select the 
 * **CIDR Block for subnet**: The CIDR range of the subnet where the EC2 server will be deployed. 
 * **Stack template relative path**: The CloudFormation template file name to deploy/modify.
 * **Stack name**: The CloudFormation stack name to deploy/modify.
-* **Enter 0 to execute immediately else 1**: The value ```0``` attempts to execute the changes to the stack immediately. Value ```1``` would create a ```change set``` that can be viewed and executed from AWS CloudFormation
+* **Enter 0 to execute immediately else 1**: The value ```0``` attempts to execute the changes to the stack immediately. The value ```1``` would create a ```change set``` that can be viewed and executed from AWS CloudFormation.
 
 Click on ```Run workflow```.
 
-If ```1``` was entered above in ```Enter 0 to execute immediately else 1``` option. Click on the ```Stack name``` in CloudFormation ```Stacks``` list. Click on the ```Change sets``` tab. 
+If ```1``` was entered above in ```Enter 0 to execute immediately else 1``` option, then click on the ```Stack name``` in CloudFormation ```Stacks``` list, and then click on the ```Change sets``` tab. 
 
 ![Run-Workflow](images/change-set.png)    
 
-Click on the ```Change set```, verify the changes being made to the stack. Click on ```Execute``` if change set is as expected.
+Click on the ```Change set```, verify the changes being made to the stack, and click on ```Execute``` if the change set is as expected.
 
-CloudFormation events and progress is shown upon selection of the stack. ```Create Complete``` indicates successful completion of changes.
+CloudFormation events and progress are shown upon selection of the stack. ```Create Complete``` indicates successful completion of changes.
 
 ![Demo](images/cf.png)  
 
-A successful run will deploy the EC2 instance in your AWS account.
+A successful run will deploy the EC2 instance to your AWS account.
 
 ![Demo](images/demoinstance.png)    
 
-The networking components VPC details, subnet as well as the security group will also be created as defined in the template.
+The networking components VPC details (subnet as well as the security group) will also be created as defined in the template.
 
 ![Demo](images/demosubnet.png)  
 ![Demo](images/demovpc.png)  
