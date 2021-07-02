@@ -47,7 +47,7 @@ All the stacks provisioned are shown here.
 ## Provisioning instances using Actions
 
 ### AWS Setup
-In order to provision the resources using Actions. [Create an IAM User](https://github.com/evergreen-innovations/blogs/tree/master/cd-S3#iam-user) and store the AWS access key and secret key in GitHub.
+In order to provision the resources using Actions, [create an IAM User](https://github.com/evergreen-innovations/blogs/tree/master/cd-S3#iam-user) and store the AWS access key and secret key in GitHub.
 
 To add secrets, click on the repository, ```Settings``` tab -> ```Secrets```.
     
@@ -64,7 +64,7 @@ Additionally, create a key pair in AWS. To create a key pair.
 
 ![Key Pairs](images/create-key.png)
 
-4. Give the KeyPair a name ```DemoKey```. Select the format to the download the key and save it a at a safe location.
+4. Give the KeyPair a name ```DemoKey```. Select the format of the download the key and save it a at a safe location.
 
 ![Key Pairs](images/create-key-2.png)
 
