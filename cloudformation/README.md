@@ -17,7 +17,7 @@ The cloud infrastructure hosted using ```Amazon Web Services``` can be managed u
 
 ```Stacks``` : All the resources defined in one template file are managed as a single unit called a stack. Resources can be created, updated or deleted by creating, updating, or deleting stacks.
 
-```Change sets``` : When changes are made to a resource that is deployed and running in a stack. We can make changes to the resource by updating the stack. Before a change can be made, a ```change set``` is generated. A change set describes a summary of proposed changes. They allow the developer to check how the changes being made might impact the running resources and services. Some of changes might result in downtime, for example, changing the name of an RDS instances after provisioning result in a change set where CloudFormation will create a new database and remove the new one. The result will be loss of all data in the old database unless it was backed up.
+```Change sets``` : We can make changes to the resource by updating the stack. Before a change can be made, a ```change set``` is generated. A change set describes a summary of proposed changes. They allow the developer to check how the changes being made might impact the running resources and services. Some of changes might result in downtime. For example, changing the name of an RDS instance after provisioning results in a change set where CloudFormation will create a new database and remove the old one. The result will be loss of all data in the old database unless it was backed up.
 
 ## Demonstration
 For our demo, we will deploy an EC2 instance using a CloudFormation template. 
