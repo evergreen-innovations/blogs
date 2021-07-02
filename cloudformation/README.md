@@ -8,9 +8,8 @@ With the growth of ```cloud infrastructure```, service provider companies now ha
 
 Automating infrastructure provisioning with IaC means that developers don’t need to manually provision and manage servers, operating systems, storage, and other infrastructure components each time an application needs to be developed or deployed. 
 
-## What is CloudFormation
-The infrastructure that is hosted in the cloud using ```Amazon Web Services``` can be managed using an IaC software called
-```CloudFormation```. Using CloudFormation developers can define templates that describe the AWS resources such as EC2 instances, RDS. CloudFormation takes care of actually provisioning and configuring the resources based on the information in the template. 
+## What is CloudFormation?
+The cloud infrastructure hosted using ```Amazon Web Services``` can be managed using an IaC software called ```CloudFormation```. Using CloudFormation, developers can define templates that describe the AWS resources such as EC2 instances or RDS. CloudFormation takes care of actually provisioning and configuring the resources based on the information in the template. 
 
 ## Terminology
 
