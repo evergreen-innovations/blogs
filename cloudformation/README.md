@@ -38,7 +38,7 @@ To follow along with our demonstration, you will need:
 
 ![Services](images/services.png)
 
-3. Click on ```Stacks``` from menu on the left.
+3. Click on ```Stacks``` from the menu on the left.
 
 ![Stacks](images/stacks.png)
 
