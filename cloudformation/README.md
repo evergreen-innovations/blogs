@@ -1,10 +1,10 @@
 ## Infrastructure as code
 
-Infrastructure as code, also known as IaC, is a process of managing IT infrastructure through configuration files. Infrastructure as code enables developers to manage, monitor and provision resources using machine readable files, rather than manually configure various hardware devices and operating systems. The code can be thought to be similar to programming scripts which are used to automate IT processes.
+Infrastructure as code, also known as IaC, is a process of managing IT infrastructure through configuration files. Infrastructure as code enables developers to manage, monitor and provision resources using machine readable files. This avoids having to manually configure various hardware devices and operating systems. The code can be thought to be similar to programming scripts which are used to automate IT processes.
 
-Previously managing IT infrastructure was a manual process. Operators would physically install servers in place. The servers were then configured with the required settings and software to run an application. 
+In the past, managing IT infrastructure was a manual, error prone, and time consuming process. Operators would physically install servers in place. The servers were then configured with the required settings and software to run an application. 
 
-With growth of ```cloud``` service providers companies had easier access to the servers. However, the servers would still need to be provisioned, and configured to run the required software. The manual steps that needed to be performed resulted in three main issues - cost, scalability and availability. 
+With the growth of ```cloud infrastructure```, service provider companies now have easier access to servers. However, servers still need to be provisioned and configured to run the required software. Any manual steps involved in this process can result in issues in three main areas: cost, scalability and availability. 
 
 Automating infrastructure provisioning with IaC means that developers don’t need to manually provision and manage servers, operating systems, storage, and other infrastructure components each time an application needs to be developed or deployed. 
 
