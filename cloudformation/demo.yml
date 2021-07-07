@@ -4,7 +4,7 @@ Parameters:
   ImageID:
     Description: 'AWS Amazon Machine Image ID'
     Type: String
-    Default: 'ami-0bdef2eb518663879' #AMI ID for ubuntu 18.04 in AWS region us-west-2
+    Default: 'ami-0bdef2eb518663879' #AMI ID for ubuntu 18.04 in AWS region us-west-2, Comprehensive list: https://cloud-images.ubuntu.com/locator/ec2/
   VpcCIDRBlock:
     Description: 'CIDR Block for VPC Ex.10.0.0.0/16'
     Type: String
