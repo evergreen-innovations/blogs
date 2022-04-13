@@ -12,7 +12,7 @@ key-value pair. `Maps` may also be iterated over to
 view each key-value pair.
 
 After having segfaults in some C++ code, I learnt the hard way about
-"interator invalidation" when an element is deleted from the map
+"iterator invalidation" when an element is deleted from the map
 during iteration.
 
 Later, coming to Go two things struck me immediately about the
@@ -21,7 +21,8 @@ in-built `map` type that were different compared to C++:
 2) The iteration order is non-deterministic.
 
 This blog explores the implementations in both languages to explain
-these differences.
+these differences. When source code is presented, comments added for
+this blog are prefaced `[Blog]`.
 
 
 ## C++ implementation
@@ -67,12 +68,12 @@ template <class _Key>
 typename __hash_table<_Tp, _Hash, _Equal, _Alloc>::iterator
 __hash_table<_Tp, _Hash, _Equal, _Alloc>::find(const _Key& __k)
 {
-    size_t __hash = hash_function()(__k);           // Get the hash for the key
+    size_t __hash = hash_function()(__k);           // [Blog] Get the hash for the key
     size_type __bc = bucket_count();
-    if (__bc != 0)                                  // Check we have buckets
+    if (__bc != 0)                                  // [Blog] Check we have buckets
     {
-        size_t __chash = __constrain_hash(__hash, __bc); // Turn the hash into an index
-        __next_pointer __nd = __bucket_list_[__chash];   // Get the pointer to first element in the linked list
+        size_t __chash = __constrain_hash(__hash, __bc); // [Blog] Turn the hash into an index
+        __next_pointer __nd = __bucket_list_[__chash];   // [Blog] Get the pointer to first element in the linked list
         if (__nd != nullptr)
         {
             // Walk the linked list: follow the __next_ pointer,
@@ -85,7 +86,7 @@ __hash_table<_Tp, _Hash, _Equal, _Alloc>::find(const _Key& __k)
             // Check if this element matches the one we are looking for
                 if ((__nd->__hash() == __hash)
                     && key_eq()(__nd->__upcast()->__value_, __k))
-                    return iterator(__nd);         // Return the element
+                    return iterator(__nd);         // [Blog] Return the element
             }
         }
     }
@@ -97,8 +98,8 @@ __hash_table<_Tp, _Hash, _Equal, _Alloc>::find(const _Key& __k)
 
 A crucial part of the C++ implementation is that __final__ element in the
 linked list points to the __next__ element in the
-`__bucket_list`. This explains why in `find` there is check to make sure we
-stay in the same bucket as we follow the `__next pointer` in the
+`__bucket_list`. This explains why in `find` there is a check to make sure we
+stay in the same bucket as we follow the `__next` pointer in the
 linked list.
 
 This means that for iteration we just keep following
@@ -168,7 +169,7 @@ In the `mapAccess1`
 we can see a similar routine for finding
 a given
 element. [First](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L419)
-the key is hashed an converted to an index in the bucket array:
+the key is hashed and converted to an index in the bucket array:
 
 ```go
 	hash := t.hasher(key, uintptr(h.hash0))
@@ -178,33 +179,33 @@ the key is hashed an converted to an index in the bucket array:
 
 and then the bucket is
 [iterated](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L432)
-to find the corresponding key (comments mine)
+to find the corresponding key,
 
 ```go
     top := tophash(hash)
 bucketloop:
-	for ; b != nil; b = b.overflow(t) {            // Take care of overflow buckets
-		for i := uintptr(0); i < bucketCnt; i++ {  // Walk the bucket
+	for ; b != nil; b = b.overflow(t) {            // [Blog] Take care of overflow buckets
+		for i := uintptr(0); i < bucketCnt; i++ {  // [Blog] Walk the bucket
 			if b.tophash[i] != top {
 				if b.tophash[i] == emptyRest {
 					break bucketloop
 				}
 				continue
 			}
-			k := add(unsafe.Pointer(b),	dataOffset+i*uintptr(t.keysize))    // Get the key from the bucket data structure
+			k := add(unsafe.Pointer(b),	dataOffset+i*uintptr(t.keysize))    // [Blog] Get the key from the bucket data structure
 			if t.indirectkey() {
 				k = *((*unsafe.Pointer)(k))
 			}
-			if t.key.equal(key, k) {           // Is this the key?
+			if t.key.equal(key, k) {           // [Blog] Is this the key?
 				e := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
 				if t.indirectelem() {
 					e = *((*unsafe.Pointer)(e))
 				}
-				return e                       // Return the value
+				return e                       // [Blog] Return the value
 			}
 		}
 	}
-	return unsafe.Pointer(&zeroVal[0])           // Key not found
+	return unsafe.Pointer(&zeroVal[0])           // [Blog] Key not found
 ```
 
 Although the data structure is slightly different, so far the C++ and
@@ -227,18 +228,17 @@ non-deterministic ([Issue
 
 This iteration order begins in the `mapiterinit`
 [function](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L815)
-(comments mine except where noted)
 
 ```go
-	// decide where to start [comment from source]
-	r := uintptr(fastrand())             // Get a random number
+	// decide where to start
+	r := uintptr(fastrand())             // [Blog] Get a random number
 	if h.B > 31-bucketCntBits {
 		r += uintptr(fastrand()) << 31
 	}
-	it.startBucket = r & bucketMask(h.B) // Get starting index from the random number
-	it.offset = uint8(r >> h.B & (bucketCnt - 1)) // Start at a random element within the bucket (issue 6719)
+	it.startBucket = r & bucketMask(h.B) // [Blog] Get starting index from the random number
+	it.offset = uint8(r >> h.B & (bucketCnt - 1)) // [Blog] Start at a random element within the bucket (issue 6719)
 
-	// iterator state [comment from source]
+	// iterator state
 	it.bucket = it.startBucket
 ```
 
@@ -251,14 +251,13 @@ we started (`it.startBucket`).
 
 The logic in the `mapiternext`
 [function](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L864)
-is quite involved so some of the code is elided (comments with /// are
-mine).
+is quite involved so some of the code is elided.
 
 ```go
 
 next:
-	if b == nil {  /// Reached the end of a bucket (overflow is nil)
-		/// We have arrived back at the start bucket after wrapping around
+	if b == nil {  // [Blog] Reached the end of a bucket (overflow is nil)
+		// [Blog] We have arrived back at the start bucket after wrapping around
 		if bucket == it.startBucket && it.wrapped {
 			// end of iteration
 			it.key = nil
@@ -266,44 +265,44 @@ next:
 			return
 		}
 
-		/// (snip)
-		bucket++                         /// Move the the next bucket
-		if bucket == bucketShift(it.B) { /// Go back to the start
+		// [Blog] (snip)
+		bucket++                         // [Blog] Move the the next bucket
+		if bucket == bucketShift(it.B) { // [Blog] Go back to the start
 			bucket = 0
-			it.wrapped = true            /// Note wrapped being set to true
+			it.wrapped = true            // [Blog] Note wrapped being set to true
 		}
 		i = 0
 	}
-	for ; i < bucketCnt; i++ {          //// Loop through the buckets
-		offi := (i + it.offset) & (bucketCnt - 1)  /// The key-pair to visit involves the random offset (it.offset)
+	for ; i < bucketCnt; i++ {          // [Blog] Loop through the buckets
+		offi := (i + it.offset) & (bucketCnt - 1)  // [Blog] The key-pair to visit involves the random offset (it.offset)
 		if isEmpty(b.tophash[offi]) || b.tophash[offi] == evacuatedEmpty {
 			// TODO: emptyRest is hard to use here, as we start iterating
 			// in the middle of a bucket. It's feasible, just tricky.
 			continue
 		}
 
-		/// Get the key
+		// [Blog] Get the key
 		k := add(unsafe.Pointer(b), dataOffset+uintptr(offi)*uintptr(t.keysize))
 		if t.indirectkey() {
 			k = *((*unsafe.Pointer)(k))
 		}
 
-		/// Get the value
+		// [Blog] Get the value
 		e := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+uintptr(offi)*uintptr(t.elemsize))
 
-		/// (snip)
+		// [Blog] (snip)
 
 		if (b.tophash[offi] != evacuatedX && b.tophash[offi] != evacuatedY) ||
 			!(t.reflexivekey() || t.key.equal(k, k)) {
 			// This is the golden data, we can return it.
-			/// (snip)
-			it.key = k                                   /// Set the key
+			// [Blog] (snip)
+			it.key = k                                   // [Blog] Set the key
 			if t.indirectelem() {
 				e = *((*unsafe.Pointer)(e))
 			}
-			it.elem = e                                  /// Set the value
+			it.elem = e                                  // [Blog] Set the value
 		} else {
-			/// (snip)
+			// [Blog] (snip)
 		}
 
 		it.bucket = bucket
@@ -312,23 +311,23 @@ next:
 		}
 		it.i = i + 1
 		it.checkBucket = checkBucket
-		return            /// return to yield key and value, all state is stored in the iterator
+		return            // [Blog] return to yield key and value, all state is stored in the iterator
 	}
-	b = b.overflow(t) /// check for overflow buckets
+	b = b.overflow(t) // [Blog] check for overflow buckets
 	i = 0
-	goto next         /// start the iteration procedure
+	goto next         // [Blog]  start the iteration procedure
 ```
 
-With this in mind, it's not true to say that the iteration order
+With this in mind, it's not true to say that the iteration order is
 "random". We proceed through the buckets in a specific order, it is
 just that from one iteration to the next, the starting bucket and the
 order through each bucket will be different.
 
 This iteration strategy also answers the question we had at the start
 of this post about why deletion does not require any special
-thought. We know that each of the buckets is always eight large (with
-potentially an overflow bucket) which means that we do not have the
-chain of `next` pointers to keep a track of. The
+thought. We know that each of the buckets is always eight
+elements large (with potentially an overflow bucket) which means that
+we do not have the chain of `next` pointers to keep a track of. The
 [Spec](https://go.dev/ref/spec#For_statements) also says
 
 > If a map entry that has not yet been reached is removed during
