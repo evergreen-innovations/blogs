@@ -17,7 +17,7 @@ during iteration.
 
 Later, coming to Go two things struck me immediately about the
 in-built `map` type that were different compared to C++:
-1) Deleting during iteration didn't require any special thought
+1) Deleting during an iteration didn't require any special thought
 2) The iteration order is non-deterministic.
 
 This blog explores the implementations in both languages to explain
@@ -35,7 +35,7 @@ looking at the `libc++` [implementation](https://libcxx.llvm.org/).
 The `libc++` `unordered_map`
 [implementation](https://github.com/llvm/llvm-project/blob/main/libcxx/include/unordered_map)
 uses the `hash` of the key is to index into an
-array, known as a bucket, and each bucket is a linked list which
+array, known as a bucket. Each bucket is a linked list which
 stores the individual key-value pairs.
 
 Internally the `unordered_map` defers to the `__hash_table`
@@ -104,7 +104,7 @@ linked list.
 
 This means that for iteration we just keep following
 the `__next` pointer until we reach the end of the `_bucket_list` and,
-therefore, the iteration order identical (assuming no elements are
+therefore, the iteration order is identical (assuming no elements are
 removed or added) between iterations.
 
 This underlying data structure also explains why the following program
@@ -153,8 +153,7 @@ an "overflow bucket" is used until a threshold is hit, which triggers
 twice as many buckets to be allocated and all the existing elements
 are rearranged into the new buckets.
 
-Another
-interesting facet is that within the bucket all the keys are stored first,
+Another interesting facet is that within the bucket all the keys are stored first,
 [followed by the
 values](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L155)
 to be maximally space efficient. Vincent Blanchon has a nice overview
@@ -166,9 +165,7 @@ overflow buckets and key-value packing.
 
 In the `mapAccess1`
 [function](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L395)
-we can see a similar routine for finding
-a given
-element. [First](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L419)
+we can see a similar routine for finding a given element. [First](https://github.com/golang/go/blob/1e34c00b4c84a32423042e3d03397277e6c3573c/src/runtime/map.go#L419)
 the key is hashed and converted to an index in the bucket array:
 
 ```go
@@ -218,7 +215,7 @@ Statemets with range clause](https://go.dev/ref/spec#For_statements)", we have
 >    guaranteed to be the same from one iteration to the next.
 
 This is a deliberate design choice in order to stop developers relying
-on a particular interation order. If the Go Team wanted to change
+on a particular iteration order. If the Go Team wanted to change
 the underlying implementation of the `map` type (but keep the same
 API), a change in the iteration order could then, perhaps silently,
 break existing code. Early on, the order was deterministic if the map
