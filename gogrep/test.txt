@@ -1,0 +1,4 @@
+first line
+second line with ending
+third entry in the file
+fouth entry in the file
