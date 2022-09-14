@@ -21,13 +21,11 @@ func main() {
 	}()
 
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [options] pattern [file] \n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s  [options] pattern [file] \n", os.Args[0])
 		flag.PrintDefaults()
 	}
 
-	var countFlag bool
 	var insensitiveFlag bool
-	flag.BoolVar(&countFlag, "c", false, "count")
 	flag.BoolVar(&insensitiveFlag, "i", false, "insensitive match")
 	flag.Parse()
 
@@ -61,26 +59,17 @@ func main() {
 		defer f.Close()
 	}
 
-	count := 0
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		l := scanner.Text()
 
 		if rex.MatchString(l) {
-			count++
-
-			if !countFlag {
-				fmt.Println(l)
-			}
+			fmt.Println(l)
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		mainErr = err
 		return
-	}
-
-	if countFlag {
-		fmt.Println(count)
 	}
 }
